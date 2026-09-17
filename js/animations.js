@@ -1,21 +1,12 @@
 'use strict';
 
 /* ============================================
-   LUX — ANIMATIONS ENGINE (Full + Live Hero)
-   Includes:
-   - Scroll Reveal + Stagger (Live)
-   - Hero Entry Animation (Live with scroll)
-   - Fly to Cart
-   - Page Transitions
-   - Counter (once)
-   - Parallax
-   - Clip Reveal (Live)
-   - Magnetic Buttons
-   - 3D Tilt
-   - Sound FX
-   - Confetti
-============================================ */
+   LUX — ANIMATIONS ENGINE (Full + Mobile Fixes v2)
+   ============================================ */
 (function() {
+
+  const DEBUG = true; // ← بدّلها false بعد ما تتأكد إن كل حاجة شغالة
+  const log = (...args) => { if (DEBUG) console.log('[LUX]', ...args); };
 
   /* ============ UTILS ============ */
   const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -31,50 +22,37 @@
     };
   }
 
-  /* ============================================
-     1 + 2. SCROLL REVEAL + STAGGER
-     (Live with scroll)
-  ============================================ */
+  function isInViewport(el) {
+    if (!el) return false;
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.width > 0 && rect.height > 0 &&
+      rect.bottom > 0 && rect.right > 0 &&
+      rect.top < window.innerHeight && rect.left < window.innerWidth
+    );
+  }
+
+  /* ============ 1 + 2. SCROLL REVEAL + STAGGER ============ */
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       entry.target.classList.toggle('in-view', entry.isIntersecting);
     });
-  }, {
-    threshold: 0,
-    rootMargin: '0px 0px -60px 0px'
-  });
+  }, { threshold: 0, rootMargin: '0px 0px -60px 0px' });
 
   function initScrollReveal() {
     if (prefersReduced()) return;
 
     const autoSelectors = [
-      '.section-head',
-      '.collection-card',
-      '.story-block',
-      '.blog-card',
-      '.blog-featured',
-      '.instagram-post',
-      '.newsletter h2',
-      '.newsletter p',
-      '.newsletter-form',
-      '.review-card',
-      '.order-card',
-      '.pdp-why',
-      '.pdp-trust-signals',
-      '.pdp-accordion',
-      '.pdp-social-proof',
-      '.empty-state',
-      '.error-visual',
-      '.error-actions',
-      '.error-suggestions-title'
+      '.section-head', '.collection-card', '.story-block', '.blog-card',
+      '.blog-featured', '.instagram-post', '.newsletter h2', '.newsletter p',
+      '.newsletter-form', '.review-card', '.order-card', '.pdp-why',
+      '.pdp-trust-signals', '.pdp-accordion', '.pdp-social-proof',
+      '.empty-state', '.error-visual', '.error-actions', '.error-suggestions-title'
     ];
-
     autoSelectors.forEach(sel => {
       document.querySelectorAll(sel).forEach(el => {
-        if (!el.classList.contains('reveal') &&
-            !el.classList.contains('reveal-left') &&
-            !el.classList.contains('reveal-right') &&
-            !el.classList.contains('reveal-scale') &&
+        if (!el.classList.contains('reveal') && !el.classList.contains('reveal-left') &&
+            !el.classList.contains('reveal-right') && !el.classList.contains('reveal-scale') &&
             !el.closest('.stagger')) {
           el.classList.add('reveal');
         }
@@ -97,42 +75,42 @@
     document.querySelectorAll(
       '.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger, ' +
       '.clip-reveal, .clip-reveal-center'
-    ).forEach(el => {
-      revealObserver.observe(el);
-    });
+    ).forEach(el => revealObserver.observe(el));
   }
 
-  /* ============================================
-     3. HERO ENTRY ANIMATION (Live with scroll)
-  ============================================ */
+  /* ============ 3. HERO ENTRY ANIMATION ============ */
   let heroFirstPlay = true;
   let isPlayingHero = false;
 
-  function waitForPreloader(callback) {
-    let attempts = 0;
+  function waitForPreloader(cb) {
+    let n = 0;
     const check = () => {
       const pre = document.getElementById('luxPreloader');
-      if (!pre || pre.classList.contains('hide')) {
-        callback();
-      } else if (attempts++ < 100) {
-        setTimeout(check, 100);
-      } else {
-        callback();
-      }
+      if (!pre || pre.classList.contains('hide')) cb();
+      else if (n++ < 100) setTimeout(check, 100);
+      else cb();
     };
     check();
   }
 
   function initHeroEntry() {
     const hero = document.querySelector('.hero');
-    if (!hero) return;
+    if (!hero) { log('Hero not found — skipping Hero Entry'); return; }
+
+    log('Hero found — waiting for Swiper init...');
+
+    // ✅ Auto-inject hero-preload class لو مش موجود
+    if (!hero.classList.contains('hero-preload')) {
+      hero.classList.add('hero-preload');
+      log('hero-preload class auto-injected');
+    }
 
     if (prefersReduced()) {
       hero.classList.remove('hero-preload');
       return;
     }
 
-    // استنى لحد ما الـ Swiper يخلي الـ slides خدت الـ state classes
+    // ✅ استنى السلايدر يخد الـ classes
     let attempts = 0;
     const tryInit = () => {
       const active = hero.querySelector('.swiper-slide-active');
@@ -140,9 +118,14 @@
       const next = hero.querySelector('.swiper-slide-next');
 
       if (active && prev && next) {
+        log('Swiper ready — setting up Hero Observer');
         setupHeroObserver(hero);
-      } else if (attempts++ < 50) {
-        setTimeout(tryInit, 100);
+      } else if (attempts++ < 80) {
+        // 80 × 50ms = 4 ثواني كحد أقصى
+        setTimeout(tryInit, 50);
+      } else {
+        log('Swiper timeout — forcing hero reveal');
+        hero.classList.remove('hero-preload');
       }
     };
     tryInit();
@@ -152,33 +135,29 @@
     const heroObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting && !isPlayingHero) {
-          // Hero دخل الشاشة
           if (heroFirstPlay) {
             heroFirstPlay = false;
-            // أول مرة: استنى الـ Preloader يخلص
             waitForPreloader(() => {
               setTimeout(() => playHeroEntry(hero), 200);
             });
           } else {
-            // كل مرة بعد كده: العب الأنيميشن فورًا
             playHeroEntry(hero);
           }
         } else if (!entry.isIntersecting && !isPlayingHero) {
-          // Hero خرج من الشاشة → جهّزه للأنيميشن الجاي
           resetHeroEntry(hero);
         }
       });
     }, {
-      threshold: 0.3,
-      rootMargin: '0px 0px -80px 0px'
+      threshold: 0.15,          // ← قللنا من 0.3 عشان يشتغل أسرع على الموبايل
+      rootMargin: '0px 0px -40px 0px'
     });
-
     heroObserver.observe(hero);
   }
 
   function playHeroEntry(hero) {
     if (isPlayingHero) return;
     isPlayingHero = true;
+    log('Playing Hero Entry animation');
 
     const slides = hero.querySelectorAll('.swiper-slide');
 
@@ -195,10 +174,8 @@
       }
     });
 
-    // اكشف الصور
     hero.classList.remove('hero-preload');
 
-    // نضّف الـ animation بعد ما تخلص
     setTimeout(() => {
       slides.forEach(slide => {
         const img = slide.querySelector('.hero-img');
@@ -210,76 +187,88 @@
 
   function resetHeroEntry(hero) {
     if (isPlayingHero) return;
-
-    // امحي أي animation متبقية
-    hero.querySelectorAll('.hero-img').forEach(img => {
-      img.style.animation = '';
-    });
-
-    // رجّع الـ hero-preload عشان الصور تختفي تاني وتستعد للأنيميشن الجاي
+    hero.querySelectorAll('.hero-img').forEach(img => { img.style.animation = ''; });
     hero.classList.add('hero-preload');
   }
 
-  /* ============================================
-     4. FLY TO CART
-  ============================================ */
-  function flyToCart(sourceEl, imgSrc, onArrive) {
+  /* ============ 4. FLY TO CART ============ */
+  function flyToCart(sourceEl, imgSrc, onArrive, forcedSize) {
     if (prefersReduced()) { if (onArrive) onArrive(); return; }
+
     const bagIcon = document.getElementById('bagOpen');
-    if (!bagIcon || !sourceEl) { if (onArrive) onArrive(); return; }
-
-    const startRect = sourceEl.getBoundingClientRect();
-    const endRect = bagIcon.getBoundingClientRect();
-
-    const startX = startRect.left + startRect.width / 2;
-    const startY = startRect.top + startRect.height / 2;
-    const endX = endRect.left + endRect.width / 2;
-    const endY = endRect.top + endRect.height / 2;
-    const startSize = Math.min(startRect.width, startRect.height, 90);
-
-    const flyer = document.createElement('img');
-    flyer.className = 'fly-to-cart';
-    flyer.src = imgSrc;
-    flyer.style.left = (startX - startSize / 2) + 'px';
-    flyer.style.top = (startY - startSize / 2) + 'px';
-    flyer.style.width = startSize + 'px';
-    flyer.style.height = startSize + 'px';
-    document.body.appendChild(flyer);
-
-    void flyer.offsetWidth;
-
-    const deltaX = endX - startX;
-    const deltaY = endY - startY;
-
-    flyer.style.transition = 'transform 0.85s cubic-bezier(0.5, -0.3, 0.6, 1), opacity 0.85s cubic-bezier(0.5, 0, 0.6, 1)';
-    flyer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.15) rotate(20deg)`;
-    flyer.style.opacity = '0.3';
-
-    setTimeout(() => {
-      flyer.remove();
-      bagIcon.classList.remove('pulse');
-      void bagIcon.offsetWidth;
-      bagIcon.classList.add('pulse');
+    if (!bagIcon || !sourceEl || !imgSrc) {
+      log('flyToCart: missing bag/source/img', { bagIcon: !!bagIcon, sourceEl: !!sourceEl, imgSrc: !!imgSrc });
       if (onArrive) onArrive();
-    }, 850);
+      return;
+    }
+
+    // رجّع الناف بار لو مخفي
+    const navbar = document.querySelector('.navbar');
+    if (navbar && navbar.classList.contains('navbar-hidden')) {
+      navbar.classList.remove('navbar-hidden');
+    }
+
+    requestAnimationFrame(() => {
+      const startRect = sourceEl.getBoundingClientRect();
+      const endRect = bagIcon.getBoundingClientRect();
+
+      const startX = startRect.left + startRect.width / 2;
+      const startY = startRect.top + startRect.height / 2;
+      const endX = endRect.left + endRect.width / 2;
+      const endY = endRect.top + endRect.height / 2;
+
+      let startSize = forcedSize || Math.min(startRect.width, startRect.height, 90);
+      if (startSize < 60) startSize = 60;
+
+      log('flyToCart', { startX, startY, endX, endY, startSize });
+
+      const flyer = document.createElement('img');
+      flyer.className = 'fly-to-cart';
+      flyer.src = imgSrc;
+      flyer.style.cssText = `
+        position: fixed;
+        left: ${startX - startSize / 2}px;
+        top: ${startY - startSize / 2}px;
+        width: ${startSize}px;
+        height: ${startSize}px;
+        z-index: 9996;
+        pointer-events: none;
+        object-fit: contain;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+      `;
+      document.body.appendChild(flyer);
+
+      void flyer.offsetWidth;
+
+      const deltaX = endX - startX;
+      const deltaY = endY - startY;
+
+      flyer.style.transition = 'transform 0.85s cubic-bezier(0.5, -0.3, 0.6, 1), opacity 0.85s cubic-bezier(0.5, 0, 0.6, 1)';
+      flyer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.15) rotate(20deg)`;
+      flyer.style.opacity = '0.3';
+
+      setTimeout(() => {
+        flyer.remove();
+        bagIcon.classList.remove('pulse');
+        void bagIcon.offsetWidth;
+        bagIcon.classList.add('pulse');
+        if (onArrive) onArrive();
+      }, 850);
+    });
   }
 
   window.flyToCart = flyToCart;
 
-  /* ============================================
-     5. PAGE TRANSITIONS
-  ============================================ */
+  /* ============ 5. PAGE TRANSITIONS ============ */
   function initPageTransitions() {
     if (prefersReduced()) return;
 
     const trans = document.createElement('div');
     trans.className = 'page-transition';
     trans.id = 'pageTransition';
-    trans.innerHTML = `
-      <div class="page-transition-curtain">
-        <div class="page-transition-logo">LUX</div>
-      </div>
-    `;
+    trans.innerHTML = `<div class="page-transition-curtain"><div class="page-transition-logo">LUX</div></div>`;
     document.body.appendChild(trans);
 
     document.addEventListener('click', (e) => {
@@ -288,16 +277,10 @@
       const href = link.getAttribute('href');
       if (!href) return;
 
-      if (href.startsWith('http') ||
-          href.startsWith('mailto:') ||
-          href.startsWith('tel:') ||
-          href.startsWith('#') ||
-          href.startsWith('javascript:') ||
-          link.target === '_blank' ||
-          link.hasAttribute('download') ||
-          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
-        return;
-      }
+      if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:') ||
+          href.startsWith('#') || href.startsWith('javascript:') ||
+          link.target === '_blank' || link.hasAttribute('download') ||
+          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
       const currentPath = window.location.pathname.split('/').pop() || 'index.html';
       const targetPath = href.split('?')[0].split('#')[0];
@@ -313,19 +296,15 @@
     });
   }
 
-  /* ============================================
-     6. COUNTERS (once per element)
-  ============================================ */
+  /* ============ 6. COUNTERS ============ */
   function animateCounter(el, target, duration = 1600) {
     const startTime = performance.now();
     const decimals = (target % 1 !== 0) ? 1 : 0;
     const isRTL = document.documentElement.dir === 'rtl';
-
     const format = (n) => {
       const s = n.toFixed(decimals);
       return isRTL ? s.replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]) : s;
     };
-
     const tick = (now) => {
       const p = Math.min(1, (now - startTime) / duration);
       const eased = 1 - Math.pow(1 - p, 3);
@@ -349,7 +328,6 @@
 
   function initCounters() {
     document.querySelectorAll('[data-counter]').forEach(el => counterObserver.observe(el));
-
     const big = document.getElementById('reviewsRatingBig');
     if (big && !big.dataset.counter) {
       const val = parseFloat(big.textContent);
@@ -361,14 +339,11 @@
     }
   }
 
-  /* ============================================
-     7. PARALLAX
-  ============================================ */
+  /* ============ 7. PARALLAX (Desktop only) ============ */
   function initParallax() {
     if (prefersReduced() || isMobile()) return;
     const items = document.querySelectorAll('[data-parallax]');
     if (!items.length) return;
-
     let raf = null;
     const update = () => {
       const scrollY = window.scrollY;
@@ -382,7 +357,6 @@
       });
       raf = null;
     };
-
     window.addEventListener('scroll', () => {
       if (raf) return;
       raf = requestAnimationFrame(update);
@@ -398,18 +372,11 @@
     initParallax();
   }
 
-  /* ============================================
-     8. CLIP REVEAL (Live with scroll)
-  ============================================ */
+  /* ============ 8. CLIP REVEAL ============ */
   function initClipReveal() {
-    const selectors = [
-      '.story-image img',
-      '.blog-featured-image img'
-    ];
-    selectors.forEach(sel => {
+    ['.story-image img', '.blog-featured-image img'].forEach(sel => {
       document.querySelectorAll(sel).forEach(img => {
-        if (!img.classList.contains('clip-reveal') &&
-            !img.classList.contains('clip-reveal-center')) {
+        if (!img.classList.contains('clip-reveal') && !img.classList.contains('clip-reveal-center')) {
           img.classList.add('clip-reveal');
           revealObserver.observe(img);
         }
@@ -417,27 +384,15 @@
     });
   }
 
-  /* ============================================
-     9. MAGNETIC BUTTONS
-  ============================================ */
+  /* ============ 9. MAGNETIC BUTTONS (Desktop only) ============ */
   function initMagneticButtons() {
     if (prefersReduced() || isTouch()) return;
-
-    const selectors = [
-      '.hero-btn',
-      '.pdp-add-btn',
-      '.pdp-buy-now',
-      '.sticky-add-btn',
-      '.newsletter-form button',
-      '.section-link',
-      '.icon-btn'
-    ];
-
+    const selectors = ['.hero-btn', '.pdp-add-btn', '.pdp-buy-now', '.sticky-add-btn',
+                       '.newsletter-form button', '.section-link', '.icon-btn'];
     document.querySelectorAll(selectors.join(',')).forEach(btn => {
       if (btn.dataset.magneticInit) return;
       btn.dataset.magneticInit = '1';
       btn.classList.add('magnetic');
-
       const strength = 0.35;
       btn.addEventListener('mousemove', (e) => {
         const rect = btn.getBoundingClientRect();
@@ -449,18 +404,14 @@
     });
   }
 
-  /* ============================================
-     10. 3D TILT
-  ============================================ */
+  /* ============ 10. 3D TILT (Desktop only) ============ */
   function initTilt() {
     if (prefersReduced() || isTouch()) return;
-
     document.querySelectorAll('.pdp-image, [data-tilt]').forEach(el => {
       if (el.dataset.tiltInit) return;
       el.dataset.tiltInit = '1';
       el.classList.add('tilt');
       if (el.parentElement) el.parentElement.classList.add('tilt-container');
-
       const MAX = 8;
       el.addEventListener('mousemove', (e) => {
         const rect = el.getBoundingClientRect();
@@ -472,9 +423,7 @@
     });
   }
 
-  /* ============================================
-     11. SOUND FX
-  ============================================ */
+  /* ============ 11. SOUND FX ============ */
   const SoundFX = {
     enabled: localStorage.getItem('lux_sound') !== 'false',
     ctx: null,
@@ -492,37 +441,27 @@
         if (this.ctx.state === 'suspended') this.ctx.resume();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.value = vol;
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        osc.type = type; osc.frequency.value = freq; gain.gain.value = vol;
+        osc.connect(gain); gain.connect(this.ctx.destination);
         osc.start();
         gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + dur);
         osc.stop(this.ctx.currentTime + dur);
       } catch {}
     },
     click() { this.play(880, 0.06, 'sine', 0.02); },
-    success() {
-      this.play(660, 0.08, 'sine', 0.025);
-      setTimeout(() => this.play(990, 0.12, 'sine', 0.025), 70);
-    }
+    success() { this.play(660, 0.08, 'sine', 0.025); setTimeout(() => this.play(990, 0.12, 'sine', 0.025), 70); }
   };
   window.SoundFX = SoundFX;
 
-  /* ============================================
-     12. CONFETTI
-  ============================================ */
+  /* ============ 12. CONFETTI ============ */
   function launchConfetti(originX, originY, count = 22) {
     if (prefersReduced()) return;
-
     let container = document.querySelector('.confetti-container');
     if (!container) {
       container = document.createElement('div');
       container.className = 'confetti-container';
       document.body.appendChild(container);
     }
-
     const colors = ['#0A0A0A', '#8B1538', '#F59E0B', '#16A34A', '#9A9A9A'];
     for (let i = 0; i < count; i++) {
       const piece = document.createElement('div');
@@ -545,42 +484,138 @@
       piece.animate([
         { transform: 'translate(0, 0) rotate(0deg) scale(1)', opacity: 1 },
         { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(0.6)`, opacity: 0 }
-      ], {
-        duration: 900 + Math.random() * 500,
-        easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)'
-      }).onfinish = () => piece.remove();
+      ], { duration: 900 + Math.random() * 500, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' })
+        .onfinish = () => piece.remove();
     }
   }
   window.launchConfetti = launchConfetti;
 
-  /* ============================================
-     HOOKS — Integrate with app.js
-  ============================================ */
+  /* ============ 13. MOBILE ANIMATIONS ============ */
+  function haptic(ms = 10) {
+    if (!navigator.vibrate) return;
+    try { navigator.vibrate(ms); } catch {}
+  }
+
+  function initHapticFeedback() {
+    if (!isTouch()) return;
+    document.addEventListener('click', (e) => {
+      const importantBtn = e.target.closest(
+        '.pdp-add-btn, .pdp-buy-now, .sticky-add-btn, .hero-btn, ' +
+        '.product-card-wish, #addBtn, #buyNowBtn, #wishBtn, ' +
+        '.newsletter-form button, .checkout-nav .btn, ' +
+        '.mobile-menu nav a, .mobile-menu-footer a, .cart-remove, .cart-save-later'
+      );
+      if (importantBtn) haptic(15);
+    }, { passive: true });
+  }
+
+  function initNavbarAutoHide() {
+    if (!isTouch()) return;
+    const navbar = document.querySelector('.navbar');
+    if (!navbar) return;
+    let lastScrollY = window.scrollY;
+    let isHidden = false;
+    let ticking = false;
+    const update = () => {
+      const y = window.scrollY;
+      const diff = y - lastScrollY;
+      if (y < 120) {
+        if (isHidden) { navbar.classList.remove('navbar-hidden'); isHidden = false; }
+      } else if (diff > 8 && !isHidden) {
+        navbar.classList.add('navbar-hidden'); isHidden = true;
+      } else if (diff < -8 && isHidden) {
+        navbar.classList.remove('navbar-hidden'); isHidden = false;
+      }
+      lastScrollY = y;
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }, { passive: true });
+  }
+
+  function initMobileAnimations() {
+    initHapticFeedback();
+    initNavbarAutoHide();
+  }
+
+  /* ============ HOOKS ============ */
+
+  function findSourceElement(product) {
+    // 1. Quick View
+    const qvModal = document.getElementById('quickViewModal');
+    if (qvModal && qvModal.classList.contains('show')) {
+      const qvImg = qvModal.querySelector('.quick-view-image img');
+      if (isInViewport(qvImg)) return { el: qvImg, img: qvImg.src, forcedSize: null };
+    }
+    // 2. PDP
+    const pdpImg = document.querySelector('.pdp-image img');
+    if (isInViewport(pdpImg)) return { el: pdpImg, img: pdpImg.src, forcedSize: null };
+    // 3. Product Card
+    if (product && product.id) {
+      const cardImg = document.querySelector(`[data-product-id="${product.id}"] .product-card-image img`);
+      if (isInViewport(cardImg)) return { el: cardImg, img: cardImg.src, forcedSize: null };
+    }
+    // 4. Mobile fallback — استخدم زر Sticky Add لو موجود
+    if (isMobile() || isTouch()) {
+      const stickyBtn = document.getElementById('stickyAddBtn') || document.getElementById('stickyBuyBtn');
+      const anyImg = document.querySelector('.pdp-image img') ||
+                     (product ? document.querySelector(`[data-product-id="${product.id}"] .product-card-image img`) : null);
+      if (stickyBtn && isInViewport(stickyBtn)) {
+        return {
+          el: stickyBtn,
+          img: anyImg ? anyImg.src : (product?.images?.[0] || null),
+          forcedSize: 70
+        };
+      }
+    }
+    // 5. Fallback: وسط الشاشة
+    const anyImg = document.querySelector('.product-card-image img, .pdp-image img, .quick-view-image img');
+    if (anyImg) return { el: anyImg, img: anyImg.src, forcedSize: 70 };
+    if (product?.images?.[0]) {
+      const virtual = document.createElement('div');
+      virtual.style.cssText = 'position:fixed;left:50%;top:50%;width:1px;height:1px;pointer-events:none;';
+      document.body.appendChild(virtual);
+      setTimeout(() => virtual.remove(), 1200);
+      return { el: virtual, img: product.images[0], forcedSize: 70 };
+    }
+    return null;
+  }
+
+  function triggerFlySequence(product) {
+    const source = findSourceElement(product);
+    if (!source || !source.el || !source.img) {
+      log('Fly: no source found');
+      return;
+    }
+    log('Fly: source found →', source.el.tagName, source.forcedSize ? `(forced ${source.forcedSize}px)` : '');
+    flyToCart(source.el, source.img, () => {
+      const bag = document.getElementById('bagOpen');
+      if (bag) {
+        const r = bag.getBoundingClientRect();
+        launchConfetti(r.left + r.width / 2, r.top + r.height / 2, 18);
+      }
+      SoundFX.success();
+    }, source.forcedSize);
+  }
+
   function hookAddToCart() {
-    if (typeof window.addToCart !== 'function' || window.addToCart.__hooked) return;
+    if (typeof window.addToCart !== 'function') {
+      setTimeout(hookAddToCart, 150);
+      return;
+    }
+    if (window.addToCart.__hooked) return;
+
     const original = window.addToCart;
     window.addToCart = function(product, size, color, qty = 1) {
-      const sourceEl =
-        document.querySelector(`.pdp-image img`) ||
-        document.querySelector(`[data-product-id="${product.id}"] .product-card-image img`) ||
-        document.querySelector('.quick-view-image img');
-
-      const imgSrc = sourceEl ? sourceEl.src : (product.images && product.images[0]);
-
-      if (sourceEl && imgSrc) {
-        flyToCart(sourceEl, imgSrc, () => {
-          const bag = document.getElementById('bagOpen');
-          if (bag) {
-            const r = bag.getBoundingClientRect();
-            launchConfetti(r.left + r.width / 2, r.top + r.height / 2, 18);
-          }
-          SoundFX.success();
-        });
-      }
-
+      try { triggerFlySequence(product); }
+      catch (err) { console.warn('[LUX] flyToCart failed:', err); }
       return original.apply(this, arguments);
     };
     window.addToCart.__hooked = true;
+    log('✅ addToCart hooked — fly-to-cart active');
   }
 
   function hookWishlist() {
@@ -603,12 +638,16 @@
     }, { passive: true });
   }
 
-  /* ============================================
-     INIT
-  ============================================ */
+  /* ============ INIT ============ */
   function initAnimations() {
-    SoundFX.init();
+    log('Init Animations', {
+      mobile: isMobile(),
+      touch: isTouch(),
+      reduced: prefersReduced(),
+      products: typeof PRODUCTS !== 'undefined' ? PRODUCTS.length : 0
+    });
 
+    SoundFX.init();
     initScrollReveal();
     initHeroEntry();
     initPageTransitions();
@@ -617,12 +656,13 @@
     initMagneticButtons();
     initTilt();
     applyHeroParallax();
+    initMobileAnimations();
 
     setTimeout(() => {
       hookAddToCart();
       hookWishlist();
       hookButtonSounds();
-    }, 100);
+    }, 150);
 
     const reInit = debounce(() => {
       initScrollReveal();
@@ -634,9 +674,12 @@
     new MutationObserver(reInit).observe(document.body, { childList: true, subtree: true });
   }
 
+  // ✅ شغّل بعد DOMContentLoaded + شوية عشان نضمن إن السلايدر جاهز
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAnimations);
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(initAnimations, 100);
+    });
   } else {
-    initAnimations();
+    setTimeout(initAnimations, 100);
   }
 })();

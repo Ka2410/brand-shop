@@ -2,7 +2,6 @@
 
 /* ============ PRELOADER (INDEX ONLY) ============ */
 (function initPreloader() {
-  // Only run preloader on home page (index.html or /)
   const path = window.location.pathname.split('/').pop();
   const isHomePage = path === '' || path === 'index.html' || path === '/';
   if (!isHomePage) return;
@@ -64,6 +63,7 @@
   if (document.readyState === 'complete') finish();
   else { window.addEventListener('load', finish); setTimeout(finish, 3000); }
 })();
+
 /* ============ LANGUAGE TRANSITION ============ */
 let isLangTransitioning = false;
 
@@ -129,7 +129,7 @@ const TRANSLATIONS = {
     orderNumber: 'Order Number', thankYou: 'Thank you for shopping with LUX.',
     continueShoppingBtn: 'Continue Shopping',
     firstName: 'First Name', lastName: 'Last Name', confirmPassword: 'Confirm Password',
-    checkoutTitle: 'Checkout', infoStep: 'Information', shippingStep: 'Shipping',
+    checkoutTitle: 'Checkout', infoStep: 'Info', shippingStep: 'Shipping',
     paymentStep: 'Payment', contactInfo: 'Contact Information',
     shippingAddress: 'Shipping Address', shippingMethod: 'Shipping Method',
     paymentMethod: 'Payment Method', standardShipping: 'Standard (3-5 days)',
@@ -173,11 +173,13 @@ const TRANSLATIONS = {
     inStock: 'In Stock',
     lowStock: 'Only {n} left',
     outOfStock: 'Out of Stock',
+    outOfStockLabel: 'SOLD OUT',
     addYourSize: 'Select a size',
     followUs: 'Follow us on Instagram',
     whatsappChat: 'Chat on WhatsApp',
     quickViewSizes: 'Select size',
     crossSellTitle: 'You May Also Like',
+    crossSellMore: 'Swipe for more →',
     completeTheLook: 'Complete the Look',
     quickAdd: 'Quick Add',
     accountWelcome: 'Welcome back',
@@ -222,7 +224,6 @@ const TRANSLATIONS = {
     faqA5: 'We accept Credit/Debit Cards, Cash on Delivery, Vodafone Cash, InstaPay, and Paymob.',
     readTime3: '3 min read', readTime4: '4 min read', readTime5: '5 min read', readTime6: '6 min read',
     dateDec2025: 'Dec 2025',
-    // ===== NEW =====
     tagline: 'Cairo Streetwear · Since 2024',
     trustFreeShipping: 'Free shipping over EGP 2000',
     trustReturns: '14-day easy returns',
@@ -241,11 +242,15 @@ const TRANSLATIONS = {
     pageNotFoundSub: "The page you're looking for doesn't exist — but these do.",
     exploreCollection: 'Explore Collection',
     backToShop: 'Back to Shop',
-    // ===== Fit labels =====
     fitOversized: 'Oversized',
     fitRegular: 'Regular',
     fitRelaxed: 'Relaxed',
-    fitSlim: 'Slim'
+    fitSlim: 'Slim',
+    // ===== Checkout form groups =====
+    formGroupContact: 'Contact',
+    formGroupShipping: 'Shipping Address',
+    formGroupApartment: 'Apartment Details (Optional)',
+    contactHint: 'We will use this to send order updates.'
   },
   ar: {
     locale: 'اللغة', features: 'الميزات', addToBag: 'أضف للحقيبة', buyNow: 'اشترِ الآن',
@@ -320,11 +325,13 @@ const TRANSLATIONS = {
     inStock: 'متوفر',
     lowStock: 'باقي {n} بس',
     outOfStock: 'غير متوفر',
+    outOfStockLabel: 'خلص',
     addYourSize: 'اختر المقاس',
     followUs: 'تابعنا على انستجرام',
     whatsappChat: 'كلمنا على واتساب',
     quickViewSizes: 'اختر المقاس',
     crossSellTitle: 'قد يعجبك أيضًا',
+    crossSellMore: 'اسحب للمزيد ←',
     completeTheLook: 'أكمل اللوك',
     quickAdd: 'إضافة سريعة',
     accountWelcome: 'أهلاً بعودتك',
@@ -390,7 +397,11 @@ const TRANSLATIONS = {
     fitOversized: 'أوفرسايز',
     fitRegular: 'عادي',
     fitRelaxed: 'مريح',
-    fitSlim: 'ضيق'
+    fitSlim: 'ضيق',
+    formGroupContact: 'معلومات الاتصال',
+    formGroupShipping: 'عنوان الشحن',
+    formGroupApartment: 'تفاصيل الشقة (اختياري)',
+    contactHint: 'هنستخدمها لتبعتلك تحديثات الطلب.'
   }
 };
 
@@ -415,7 +426,7 @@ const escapeHtml = (str) => String(str ?? '')
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&#039;');
 
-/* ============ PRODUCTS (مع وصف موسّع + fit + reviews data) ============ */
+/* ============ PRODUCTS (مع outOfStock) ============ */
 const PRODUCTS = [
   {
     id: 1, slug: 'nyc-graffiti',
@@ -424,6 +435,7 @@ const PRODUCTS = [
     price: 999.99, comparePrice: 1299.99,
     category: 'graphic-tees', categoryLabel: 'Graphic Tees', categoryLabelAr: 'تي شيرتات',
     sizes: ['S','M','L','XL','XXL'],
+    outOfStock: ['XXL'],
     colors: [
       { name: 'White', nameAr: 'أبيض', hex: '#FFFFFF' },
       { name: 'Black', nameAr: 'أسود', hex: '#0A0A0A' },
@@ -434,8 +446,8 @@ const PRODUCTS = [
     fit: 'Oversized',
     description: 'Inspired by 90s NYC graffiti culture. Oversized graphic tee in premium cotton.',
     descriptionAr: 'مستوحى من ثقافة الجرافيتي في نيويورك التسعينيات. تي شيرت أوفرسايز بقطن فاخر.',
-    descriptionLong: 'A wearable piece of NYC history — our NYC Graffiti Graphic Tee captures the raw energy of 90s street art with a modern cut. Screen-printed by hand on 240 GSM ring-spun cotton, it holds its shape wash after wash and only gets softer with time. The boxy silhouette drops just right on the shoulders, making it perfect for layering or wearing solo.',
-    descriptionLongAr: 'قطعة من تاريخ نيويورك — التي شيرت ده بيلقط الطاقة الجريئة لفنون الشوارع التسعينيات بقَصّة عصرية. مطبوع يدويًا على قطن ٢٤٠ جرام، بيحافظ على شكله مهما اتغسل وبيبقى أنعم مع الوقت. القَصّة الواسعة بتنزل على الكتف بشكل مثالي.',
+    descriptionLong: 'A wearable piece of NYC history — our NYC Graffiti Graphic Tee captures the raw energy of 90s street art with a modern cut.',
+    descriptionLongAr: 'قطعة من تاريخ نيويورك — التي شيرت ده بيلقط الطاقة الجريئة لفنون الشوارع التسعينيات بقَصّة عصرية.',
     whyWeMadeIt: 'Cairo streets taught us to stand out. NYC taught us how to shout it.',
     whyWeMadeItAr: 'شوارع القاهرة علمتنا نتميز. نيويورك علمتنا نعلي صوتنا.',
     materials: '100% Cotton · 240 GSM',
@@ -448,6 +460,7 @@ const PRODUCTS = [
     price: 899.99,
     category: 'graphic-tees', categoryLabel: 'Graphic Tees', categoryLabelAr: 'تي شيرتات',
     sizes: ['M','L','XL'],
+    outOfStock: [],
     colors: [
       { name: 'Black', nameAr: 'أسود', hex: '#0A0A0A' },
       { name: 'Faded Black', nameAr: 'أسود باهت', hex: '#3A3A3A' }
@@ -455,10 +468,10 @@ const PRODUCTS = [
     images: ['./images/look-02.png'], stock: 15,
     rating: 4.6, reviewCount: 84, soldCount: 420,
     fit: 'Regular',
-    description: 'Sleeveless graphic tee with "Free Your Mind" print. Breathable cotton.',
-    descriptionAr: 'تي شيرت صيفي بطبعة "Free Your Mind". قطن يتنفس.',
-    descriptionLong: 'Made for Cairo summers. The Free Mind Sleeveless Tee is cut from lightweight breathable cotton with a relaxed shoulder that lets air flow freely. The bold "Free Your Mind" print is a daily reminder — wear it on the court, the rooftop, or anywhere the city takes you.',
-    descriptionLongAr: 'معمول لصيف القاهرة. التي شيرت الصيفي ده من قطن خفيف يتنفس، بقَصّة مريحة على الكتف بتسمح بالتهوية. طبعة "Free Your Mind" الجريئة تذكيرك اليومي — البسه في النادي، على السطوح، أو أي مكان في المدينة.',
+    description: 'Sleeveless graphic tee with "Free Your Mind" print.',
+    descriptionAr: 'تي شيرت صيفي بطبعة "Free Your Mind".',
+    descriptionLong: 'Made for Cairo summers. The Free Mind Sleeveless Tee is cut from lightweight breathable cotton.',
+    descriptionLongAr: 'معمول لصيف القاهرة. التي شيرت الصيفي ده من قطن خفيف يتنفس.',
     whyWeMadeIt: 'Because your mind deserves the same freedom your body does.',
     whyWeMadeItAr: 'لأن عقلك يستحق نفس الحرية اللي جسمك محتاجها.',
     materials: '100% Cotton',
@@ -471,6 +484,7 @@ const PRODUCTS = [
     price: 1799.99,
     category: 'oversized-fits', categoryLabel: 'Oversized Fits', categoryLabelAr: 'أوفرسايز',
     sizes: ['S','M','L','XL'],
+    outOfStock: ['XL'],
     colors: [
       { name: 'Orange', nameAr: 'برتقالي', hex: '#FF6B1A' },
       { name: 'Grey', nameAr: 'رمادي', hex: '#9A9A9A' }
@@ -479,9 +493,9 @@ const PRODUCTS = [
     rating: 4.9, reviewCount: 41, soldCount: 180,
     fit: 'Oversized',
     description: 'Statement zip hoodie in bold orange. Heavyweight, boxy fit.',
-    descriptionAr: 'هودي بسحاب بلون برتقالي جريء. تقيل، أوفرسايز، بإحساس تقني.',
-    descriptionLong: 'Our boldest drop yet. The Orange Heat Zip Hoodie is built on 400 GSM heavyweight fleece with a double-layer hood, YKK zipper, and metal-tipped drawstrings. It is loud, it is warm, and it is built to be worn as a statement — not just a layer.',
-    descriptionLongAr: 'أجرأ إصدار عندنا. هودي Orange Heat بسحاب على قماش ٤٠٠ جرام تقيل، بكابوت طبقتين، سحاب YKK، وخيطان معدنية. صوته عالي، دافي، ومصمم يلبس كتصريح مش كطبقة عادية.',
+    descriptionAr: 'هودي بسحاب بلون برتقالي جريء.',
+    descriptionLong: 'Our boldest drop yet. Built on 400 GSM heavyweight fleece with a double-layer hood.',
+    descriptionLongAr: 'أجرأ إصدار عندنا. مبني على قماش ٤٠٠ جرام تقيل بكابوت طبقتين.',
     whyWeMadeIt: 'To prove that Egypt can make loud, world-class streetwear.',
     whyWeMadeItAr: 'عشان نثبت إن مصر تقدر تعمل ستريت وير عالمي بصوت عالي.',
     materials: '80% Cotton · 20% Polyester · 400 GSM',
@@ -494,6 +508,7 @@ const PRODUCTS = [
     price: 699.99,
     category: 'graphic-tees', categoryLabel: 'Graphic Tees', categoryLabelAr: 'تي شيرتات',
     sizes: ['XS','S','M','L'],
+    outOfStock: ['XS'],
     colors: [
       { name: 'White', nameAr: 'أبيض', hex: '#FFFFFF' },
       { name: 'Black', nameAr: 'أسود', hex: '#0A0A0A' }
@@ -503,8 +518,8 @@ const PRODUCTS = [
     fit: 'Slim',
     description: 'Minimalist ribbed tank, perfect for layering.',
     descriptionAr: 'توب مضلع مينيمال، مثالي للطبقات.',
-    descriptionLong: 'The Clean Canvas Ribbed Tank is where minimalist design meets maximum comfort. Cut from a soft cotton-elastane blend with a fitted rib that stretches without losing shape. Wear it under a hoodie, over a tee, or as a stand-alone piece in summer.',
-    descriptionLongAr: 'توب Clean Canvas المضلع هو التقاء البساطة بالراحة القصوى. مصنوع من قطن و elastane بضلوع مريح يمد من غير ما يفقد شكله. البسه تحت هودي، فوق تي شيرت، أو لوحده في الصيف.',
+    descriptionLong: 'Where minimalist design meets maximum comfort.',
+    descriptionLongAr: 'التقاء البساطة بالراحة القصوى.',
     whyWeMadeIt: 'Every wardrobe needs a blank canvas. This is ours.',
     whyWeMadeItAr: 'كل دولاب محتاج كانفاس فاضي. ده بتاعنا.',
     materials: '95% Cotton · 5% Elastane',
@@ -517,6 +532,7 @@ const PRODUCTS = [
     price: 1099.99,
     category: 'graphic-tees', categoryLabel: 'Graphic Tees', categoryLabelAr: 'تي شيرتات',
     sizes: ['S','M','L','XL'],
+    outOfStock: [],
     colors: [
       { name: 'Multi', nameAr: 'متعدد', hex: '#8B1538' },
       { name: 'Navy', nameAr: 'كحلي', hex: '#1A2B4A' }
@@ -526,8 +542,8 @@ const PRODUCTS = [
     fit: 'Regular',
     description: 'Retro 99 varsity tee with vintage-style color-blocking.',
     descriptionAr: 'تي شيرت فارسيتي ريترو ٩٩ بستايل فينتاج.',
-    descriptionLong: 'A love letter to the late 90s. The Retro 99 Varsity Tee brings back the golden era of American collegiate sportswear with vintage-washed color blocking and an oversized chest print. Cut for everyday wear — soft, structured, and made to fade beautifully over time.',
-    descriptionLongAr: 'رسالة حب لآخر التسعينيات. تي شيرت Retro 99 Varsity بيرجع العصر الذهبي للملابس الرياضية الجامعية الأمريكية بغسلة فينتاج وألوان بلوك ومطبوع كبير على الصدر. مقصوص للاستخدام اليومي — ناعم، مرتب، ومصمم يبهت بشكل جميل مع الوقت.',
+    descriptionLong: 'A love letter to the late 90s.',
+    descriptionLongAr: 'رسالة حب لآخر التسعينيات.',
     whyWeMadeIt: 'The 90s never really ended. They just moved to Cairo.',
     whyWeMadeItAr: 'التسعينيات عمرها ما خلصت. بس انتقلت القاهرة.',
     materials: '100% Cotton · Vintage Wash',
@@ -540,6 +556,7 @@ const PRODUCTS = [
     price: 1199.99,
     category: 'graphic-tees', categoryLabel: 'Graphic Tees', categoryLabelAr: 'تي شيرتات',
     sizes: ['S','M','L','XL','XXL'],
+    outOfStock: ['S'],
     colors: [
       { name: 'White', nameAr: 'أبيض', hex: '#FFFFFF' },
       { name: 'Black', nameAr: 'أسود', hex: '#0A0A0A' },
@@ -550,8 +567,8 @@ const PRODUCTS = [
     fit: 'Oversized',
     description: 'Oversized tee with a bold back print.',
     descriptionAr: 'تي شيرت أوفرسايز بطبعة خلفية جريئة.',
-    descriptionLong: 'What happens back stage stays back stage — except this print. Our Back Stage Tee is designed with a full-length back graphic printed with water-based inks, giving it a vintage feel from day one. 220 GSM heavyweight cotton, boxy cut, drop shoulders.',
-    descriptionLongAr: 'اللي يحصل خلف الكواليس يفضل خلف الكواليس — ما عدا الطبعة دي. تي شيرت Back Stage معمول بطبعة كاملة على الظهر بأحبار مائية، بتديه إحساس فينتاج من أول يوم. قطن ٢٢٠ جرام تقيل، قَصّة واسعة، أكتاف نازلة.',
+    descriptionLong: 'What happens back stage stays back stage — except this print.',
+    descriptionLongAr: 'اللي يحصل خلف الكواليس يفضل خلف الكواليس — ما عدا الطبعة دي.',
     whyWeMadeIt: 'Because the best stories are the ones nobody talks about.',
     whyWeMadeItAr: 'لأن أحلى الحكايات هي اللي محدش بيتكلم عنها.',
     materials: '100% Cotton · 220 GSM',
@@ -564,6 +581,7 @@ const PRODUCTS = [
     price: 1399.99,
     category: 'graphic-tees', categoryLabel: 'Graphic Tees', categoryLabelAr: 'تي شيرتات',
     sizes: ['S','M','L','XL','XXL'],
+    outOfStock: ['S','M'],
     colors: [
       { name: 'White', nameAr: 'أبيض', hex: '#FFFFFF' },
       { name: 'Red', nameAr: 'أحمر', hex: '#8B1538' }
@@ -573,8 +591,8 @@ const PRODUCTS = [
     fit: 'Oversized',
     description: 'Iconic back-print tee paired with pinstripe pants.',
     descriptionAr: 'تي شيرت بطبعة خلفية أيقونية مع بنطلون مقلم.',
-    descriptionLong: 'The Red Line Tee is our tribute to the boundary between chaos and control. Bold red typography against off-white 240 GSM cotton, with a graphic that only gets better with age. This is the piece that started it all — redesigned.',
-    descriptionLongAr: 'تي شيرت Red Line هو تحيتنا للحد بين الفوضى والانضباط. طبعة حمراء جريئة على قطن ٢٤٠ جرام أوف وايت، بتصميم بيبقى أحلى مع الوقت. القطعة اللي بدأ منها كل حاجة — بإصدار جديد.',
+    descriptionLong: 'Our tribute to the boundary between chaos and control.',
+    descriptionLongAr: 'تحيتنا للحد بين الفوضى والانضباط.',
     whyWeMadeIt: 'Some lines are meant to be crossed. This one is meant to be worn.',
     whyWeMadeItAr: 'في خطوط معمولة تتعدى. والخط ده معمول يتلبس.',
     materials: '100% Cotton · 240 GSM',
@@ -587,6 +605,7 @@ const PRODUCTS = [
     price: 899.99,
     category: 'graphic-tees', categoryLabel: 'Graphic Tees', categoryLabelAr: 'تي شيرتات',
     sizes: ['XS','S','M','L'],
+    outOfStock: ['XS','L'],
     colors: [
       { name: 'Black', nameAr: 'أسود', hex: '#0A0A0A' },
       { name: 'Charcoal', nameAr: 'فحمي', hex: '#3A3A3A' }
@@ -596,8 +615,8 @@ const PRODUCTS = [
     fit: 'Slim',
     description: 'Fitted crop tank with a soft touch.',
     descriptionAr: 'توب قصير مظبوط بملمس ناعم.',
-    descriptionLong: 'The Girl Boss Crop Tank is confidence you can wear. Cut close to the body with a slightly cropped hem, made from a soft cotton-elastane blend that moves with you. Perfect with high-rise denim, layered under an oversized button-up, or on its own.',
-    descriptionLongAr: 'توب Girl Boss هو الثقة اللي تتلبس. قريب من الجسم بحاشية قصيرة، مصنوع من قطن و elastane ناعم بيتحرك معاك. مثالي مع الجينز العالي، تحت قميص واسع، أو لوحده.',
+    descriptionLong: 'Confidence you can wear.',
+    descriptionLongAr: 'ثقة تتلبس.',
     whyWeMadeIt: 'For everyone who walks into a room like they own it.',
     whyWeMadeItAr: 'لكل حد بيدخل الأوضة كإنها بتاعته.',
     materials: '95% Cotton · 5% Elastane',
@@ -610,6 +629,7 @@ const PRODUCTS = [
     price: 799.99,
     category: 'graphic-tees', categoryLabel: 'Graphic Tees', categoryLabelAr: 'تي شيرتات',
     sizes: ['S','M','L','XL','XXL'],
+    outOfStock: [],
     colors: [
       { name: 'White', nameAr: 'أبيض', hex: '#FFFFFF' },
       { name: 'Off White', nameAr: 'أوف وايت', hex: '#F5F3EE' },
@@ -620,8 +640,8 @@ const PRODUCTS = [
     fit: 'Regular',
     description: 'Everyday classic tee with a subtle logo.',
     descriptionAr: 'تي شيرت كلاسيك يومي بشعار صغير.',
-    descriptionLong: 'Not every day needs to be a statement. The Off Duty Classic Tee is 180 GSM combed cotton — light, breathable, and built to be your daily go-to. Small embroidered LUX logo on the chest, clean lines everywhere else.',
-    descriptionLongAr: 'مش كل يوم محتاج يكون بيان. تي شيرت Off Duty الكلاسيك من قطن مُمشّط ١٨٠ جرام — خفيف، يتنفس، ومعمول يبقى يوميّك. شعار LUX مطرز صغير على الصدر، وخطوط نظيفة في كل حتة تانية.',
+    descriptionLong: 'Not every day needs to be a statement.',
+    descriptionLongAr: 'مش كل يوم محتاج يكون بيان.',
     whyWeMadeIt: 'Because sometimes less is the whole point.',
     whyWeMadeItAr: 'لأن في أوقات "أقل" هي الفكرة كلها.',
     materials: '100% Cotton · 180 GSM',
@@ -634,6 +654,7 @@ const PRODUCTS = [
     price: 1499.99,
     category: 'baggy-denim', categoryLabel: 'Baggy Denim', categoryLabelAr: 'بناطيل واسعة',
     sizes: ['S','M','L','XL'],
+    outOfStock: ['XL'],
     colors: [
       { name: 'Grey', nameAr: 'رمادي', hex: '#7A7A7A' },
       { name: 'Charcoal', nameAr: 'فحمي', hex: '#3A3A3A' }
@@ -643,8 +664,8 @@ const PRODUCTS = [
     fit: 'Relaxed',
     description: 'Wide-leg pinstripe pants with a tailored edge.',
     descriptionAr: 'بنطلون مقلم واسع بحافة مرتبة.',
-    descriptionLong: 'The Soft Edge Pinstripe Pants walk the line between tailored and street. Wide-leg cut in a stretch-blend fabric that drapes beautifully, with a subtle pinstripe running down the side. Dress them up with a blazer or down with a hoodie — either way, they hold the look.',
-    descriptionLongAr: 'بنطلون Soft Edge المقلم بيمشي على الخط بين الرسمي والستريت. قَصّة واسعة من قماش مخلوط بيقع بشكل جميل، مع خط مقلم رفيع على الجنب. البسه رسمي مع بليزر أو كاجوال مع هودي — في الحالتين هيمسك اللوك.',
+    descriptionLong: 'Walk the line between tailored and street.',
+    descriptionLongAr: 'مشي على الخط بين الرسمي والستريت.',
     whyWeMadeIt: 'Sharp edges, soft soul. That is Cairo in a pair of pants.',
     whyWeMadeItAr: 'حواف حادة، روح ناعمة. دي القاهرة في بنطلون.',
     materials: '60% Polyester · 40% Viscose',
@@ -652,19 +673,18 @@ const PRODUCTS = [
   }
 ];
 
-/* ============ REVIEWS (نماذج — في الحقيقة بتيجي من backend) ============ */
+/* ============ REVIEWS ============ */
 const REVIEWS = {
   1: [
     { name: 'Ahmed M.', nameAr: 'أحمد م.', rating: 5, date: '2 weeks ago', dateAr: 'من أسبوعين', verified: true, text: 'Best tee I own. Fits perfect, thick fabric, print still crisp after 5 washes.', textAr: 'أحلى تي شيرت عندي. المقاس مظبوط، القماش تقيل، والطبعة لسه زي ما هي بعد ٥ غسلات.' },
     { name: 'Sara K.', nameAr: 'سارة ك.', rating: 5, date: '1 month ago', dateAr: 'من شهر', verified: true, text: 'Ordered 2 more after the first one. Quality is insane for the price.', textAr: 'طلبت ٢ كمان بعد الأول. الجودة جنان بالنسبة للسعر.' },
-    { name: 'Youssef H.', nameAr: 'يوسف ح.', rating: 4, date: '1 month ago', dateAr: 'من شهر', verified: true, text: 'Great fit, wish they had more colors. Shipping was super fast.', textAr: 'قَصّة حلوة، ياريت لو فيه ألوان أكتر. الشحن كان سريع جدًا.' }
+    { name: 'Youssef H.', nameAr: 'يوسف ح.', rating: 4, date: '1 month ago', dateAr: 'من شهر', verified: true, text: 'Great fit, wish they had more colors.', textAr: 'قَصّة حلوة، ياريت لو فيه ألوان أكتر.' }
   ],
   3: [
-    { name: 'Omar T.', nameAr: 'عمر ط.', rating: 5, date: '1 week ago', dateAr: 'من أسبوع', verified: true, text: 'The orange pops. Heavyweight, feels premium. Worth every pound.', textAr: 'البرتقالي بيلفت. تقيل وبيحس فاخر. يستاهل كل جنيه.' },
-    { name: 'Layla S.', nameAr: 'ليلى س.', rating: 5, date: '3 weeks ago', dateAr: 'من ٣ أسابيع', verified: true, text: 'Bought it for my brother, ended up keeping it. Sorry not sorry.', textAr: 'اشتريته لأخويا، وفي الآخر خدته. آسفة مش آسفة.' }
+    { name: 'Omar T.', nameAr: 'عمر ط.', rating: 5, date: '1 week ago', dateAr: 'من أسبوع', verified: true, text: 'The orange pops. Heavyweight, feels premium. Worth every pound.', textAr: 'البرتقالي بيلفت. تقيل وبيحس فاخر. يستاهل كل جنيه.' }
   ],
   7: [
-    { name: 'Karim N.', nameAr: 'كريم ن.', rating: 5, date: '5 days ago', dateAr: 'من ٥ أيام', verified: true, text: 'The print quality is next level. Back print is huge and clean.', textAr: 'جودة الطبعة مستوى تاني. طبعة الظهر كبيرة ونظيفة.' }
+    { name: 'Karim N.', nameAr: 'كريم ن.', rating: 5, date: '5 days ago', dateAr: 'من ٥ أيام', verified: true, text: 'The print quality is next level.', textAr: 'جودة الطبعة مستوى تاني.' }
   ]
 };
 
@@ -790,7 +810,12 @@ function starsHTML(rating, size = 14) {
   return `<span class="stars">${star(true).repeat(full)}${half ? star(true) : ''}${star(false).repeat(empty)}</span>`;
 }
 
-/* ============ PRODUCT CARD (مع rating + sold) ============ */
+/* ============ OUT OF STOCK HELPER ============ */
+function isOutOfStock(product, size) {
+  return product.outOfStock && product.outOfStock.includes(size);
+}
+
+/* ============ PRODUCT CARD ============ */
 function productCardHTML(p) {
   const wishlisted = isWishlisted(p.id);
   const badgeClass = p.badge === 'Sale' ? 'sale' : (p.badge === 'New' ? 'new' : '');
@@ -856,7 +881,7 @@ document.addEventListener('click', e => {
   }
 });
 
-/* ============ CART DRAWER RENDER (مع Empty State جديد) ============ */
+/* ============ CART DRAWER ============ */
 function renderCartDrawer() {
   const cartItems = $('cartItems');
   const cartTotal = $('cartTotal');
@@ -931,7 +956,7 @@ function renderCartCrossSell() {
   if (AppState.cart.length === 0) { container.style.display = 'none'; return; }
 
   const cartIds = AppState.cart.map(i => i.productId);
-  const suggestions = PRODUCTS.filter(p => !cartIds.includes(p.id)).slice(0, 4);
+  const suggestions = PRODUCTS.filter(p => !cartIds.includes(p.id)).slice(0, 6);
   if (suggestions.length === 0) { container.style.display = 'none'; return; }
 
   container.style.display = 'block';
@@ -953,6 +978,16 @@ function renderCartCrossSell() {
       showToast(`${t('itemAdded')} — ${AppState.isRTL ? product.itemNameAr : product.itemName}`);
     });
   });
+
+  // Show/hide the "swipe for more" hint
+  updateCrossSellHint(itemsContainer);
+}
+
+function updateCrossSellHint(itemsContainer) {
+  const hint = document.querySelector('.cart-cross-sell-more');
+  if (!hint) return;
+  const hasOverflow = itemsContainer.scrollWidth > itemsContainer.clientWidth + 10;
+  hint.classList.toggle('show', hasOverflow);
 }
 
 function updateBagCount() {
@@ -965,7 +1000,7 @@ function updateBagCount() {
 
 /* ============ FOCUS TRAP ============ */
 function getFocusable(el) {
-  return el.querySelectorAll('button:not([disabled]), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  return el.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])');
 }
 
 function trapFocus(e) {
@@ -1035,7 +1070,7 @@ function showToast(msg) {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
-/* ============ QUICK VIEW ============ */
+/* ============ QUICK VIEW (Bottom Sheet on Mobile) ============ */
 let currentQuickViewProduct = null;
 let currentQuickViewSize = null;
 
@@ -1063,7 +1098,10 @@ function openQuickView(productId) {
       <div class="quick-view-price">${formatPrice(product.price)}</div>
       <div class="pdp-section-label" style="margin-bottom:12px;">${t('size')}</div>
       <div class="quick-view-sizes">
-        ${product.sizes.map(s => `<button class="quick-view-size" data-qv-size="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('')}
+        ${product.sizes.map(s => {
+          const oos = isOutOfStock(product, s);
+          return `<button class="quick-view-size ${oos ? 'out-of-stock' : ''}" data-qv-size="${escapeHtml(s)}" ${oos ? 'disabled' : ''}>${escapeHtml(s)}${oos ? '<span class="oos-mark">✕</span>' : ''}</button>`;
+        }).join('')}
       </div>
       <button class="btn btn-block" id="quickViewAdd" style="margin-bottom:12px;">${t('addToBag')}</button>
       <a href="product.html?slug=${encodeURIComponent(product.slug)}" class="btn btn-ghost btn-block">${t('view')} ${itemName}</a>
@@ -1072,6 +1110,7 @@ function openQuickView(productId) {
 
   body.querySelectorAll('[data-qv-size]').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (btn.disabled) return;
       currentQuickViewSize = btn.dataset.qvSize;
       body.querySelectorAll('[data-qv-size]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -1128,8 +1167,19 @@ function applyTranslations() {
 }
 
 function applyRTL() {
-  document.documentElement.dir = AppState.isRTL ? 'rtl' : 'ltr';
-  document.documentElement.lang = AppState.isRTL ? 'ar' : 'en';
+  const html = document.documentElement;
+
+  html.classList.add('rtl-changing');
+  html.dir = AppState.isRTL ? 'rtl' : 'ltr';
+  html.lang = AppState.isRTL ? 'ar' : 'en';
+  void html.offsetHeight;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      html.classList.remove('rtl-changing');
+    });
+  });
+
   const arBtn = $('arBtn');
   if (arBtn) arBtn.textContent = AppState.isRTL ? 'English →' : '← عربي';
 }
@@ -1247,7 +1297,13 @@ function renderDrawers() {
       <div class="cart-items" id="cartItems"></div>
       <div class="cart-cross-sell" id="cartCrossSell" style="display:none;">
         <h4 data-t="crossSellTitle">You May Also Like</h4>
+        <div class="cart-cross-sell-hint" data-t="crossSellMore">Swipe for more →</div>
         <div class="cart-cross-sell-items" id="cartCrossSellItems"></div>
+        <div class="cart-cross-sell-more">
+          <span class="cart-cross-sell-dot"></span>
+          <span class="cart-cross-sell-dot"></span>
+          <span class="cart-cross-sell-dot"></span>
+        </div>
       </div>
       <div class="cart-footer">
         <div class="cart-total-row">
@@ -1291,7 +1347,7 @@ function renderDrawers() {
     </div>
 
     <a href="https://wa.me/201211659075" target="_blank" rel="noopener" class="whatsapp-float" id="whatsappFloat" aria-label="WhatsApp">
-      <svg viewBox="0 0 24 24"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.84 1h.01a7.94 7.94 0 0 0 5.55-13.58zM12.05 18.5h-.01a6.6 6.6 0 0 1-3.36-.92l-.24-.14-2.49.65.67-2.43-.16-.25a6.6 6.6 0 0 1 1.02-8.24 6.57 6.57 0 0 1 9.32 0 6.6 6.6 0 0 1 1.93 4.66 6.62 6.62 0 0 1-6.6 6.62zm3.62-4.94c-.2-.1-1.17-.58-1.35-.64-.18-.07-.31-.1-.44.1-.13.2-.5.65-.62.78-.11.13-.23.15-.42.05-.2-.1-.83-.31-1.58-.98-.59-.52-.98-1.17-1.1-1.37-.11-.2-.01-.3.09-.4.09-.09.2-.23.3-.34.1-.11.13-.2.2-.33.06-.13.03-.25-.02-.35-.05-.1-.44-1.06-.6-1.45-.16-.38-.32-.33-.44-.33l-.38-.01a.73.73 0 0 0-.53.25c-.18.2-.7.68-.7 1.65 0 .98.71 1.92.81 2.05.1.13 1.4 2.13 3.38 2.99.47.2.84.32 1.13.41.47.15.9.13 1.24.08.38-.06 1.17-.48 1.33-.94.16-.46.16-.86.11-.94-.05-.08-.18-.13-.38-.23z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.84 1h.01a7.94 7.94 0 0 0 5.55-13.58zM12.05 18.5h-.01a6.6 6.6 0 0 1-3.36-.92l-.24-.14-2.49.65.67-2.43-.16-.25a6.6 6.6 0 0 1 1.02-8.24 6.57 6.57 0 0 1 9.32 0 6.6 6.6 0 0 1 1.93 4.66 6.62 6.62 0 0 1-6.6 6.62z"/></svg>
     </a>
   `;
 }

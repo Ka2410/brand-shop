@@ -42,30 +42,90 @@
       </div>
 
       <form id="checkoutForm" autocomplete="on">
+
+        <!-- STEP 1: INFO -->
         <div class="checkout-panel active" data-panel="1">
-          <h2 data-t="contactInfo">Contact Information</h2>
-          <div class="form-group"><label class="form-label" data-t="email">Email</label><input type="email" class="form-input" name="email" required autocomplete="email"></div>
-          <div class="form-group"><label class="form-label" data-t="phone">Phone</label><input type="tel" class="form-input" name="phone" required autocomplete="tel"></div>
-          <h2 style="margin-top:32px;" data-t="shippingAddress">Shipping Address</h2>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label" data-t="firstName">First Name</label><input type="text" class="form-input" name="firstName" required autocomplete="given-name"></div>
-            <div class="form-group"><label class="form-label" data-t="lastName">Last Name</label><input type="text" class="form-input" name="lastName" required autocomplete="family-name"></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label" data-t="city">City</label><input type="text" class="form-input" name="city" required autocomplete="address-level2"></div>
-            <div class="form-group"><label class="form-label" data-t="area">Area</label><input type="text" class="form-input" name="area" required autocomplete="address-level3"></div>
-          </div>
-          <div class="form-group"><label class="form-label" data-t="street">Street</label><input type="text" class="form-input" name="street" required autocomplete="street-address"></div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label" data-t="building">Building</label><input type="text" class="form-input" name="building" required></div>
-            <div class="form-group"><label class="form-label" data-t="apartment">Apartment</label><input type="text" class="form-input" name="apartment"></div>
-          </div>
+
+          <!-- Group 1: Contact -->
+          <fieldset class="form-fieldset">
+            <legend class="form-fieldset-title">
+              <span class="form-fieldset-num">1</span>
+              <span data-t="formGroupContact">Contact</span>
+            </legend>
+            <p class="form-fieldset-hint" data-t="contactHint">We will use this to send order updates.</p>
+
+            <div class="form-group">
+              <label class="form-label" data-t="email">Email</label>
+              <input type="email" class="form-input" name="email" required autocomplete="email" inputmode="email">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" data-t="phone">Phone</label>
+              <input type="tel" class="form-input" name="phone" required autocomplete="tel" inputmode="tel">
+            </div>
+          </fieldset>
+
+          <!-- Group 2: Shipping Address -->
+          <fieldset class="form-fieldset">
+            <legend class="form-fieldset-title">
+              <span class="form-fieldset-num">2</span>
+              <span data-t="formGroupShipping">Shipping Address</span>
+            </legend>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" data-t="firstName">First Name</label>
+                <input type="text" class="form-input" name="firstName" required autocomplete="given-name">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-t="lastName">Last Name</label>
+                <input type="text" class="form-input" name="lastName" required autocomplete="family-name">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" data-t="city">City</label>
+                <input type="text" class="form-input" name="city" required autocomplete="address-level2">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-t="area">Area</label>
+                <input type="text" class="form-input" name="area" required autocomplete="address-level3">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" data-t="street">Street</label>
+              <input type="text" class="form-input" name="street" required autocomplete="street-address">
+            </div>
+          </fieldset>
+
+          <!-- Group 3: Apartment (Optional) -->
+          <fieldset class="form-fieldset">
+            <legend class="form-fieldset-title">
+              <span class="form-fieldset-num">3</span>
+              <span data-t="formGroupApartment">Apartment Details (Optional)</span>
+            </legend>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" data-t="building">Building</label>
+                <input type="text" class="form-input" name="building">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-t="apartment">Apartment</label>
+                <input type="text" class="form-input" name="apartment">
+              </div>
+            </div>
+          </fieldset>
+
           <div class="checkout-nav">
             <a href="cart.html" class="btn btn-ghost" data-t="back">Back</a>
             <button type="button" class="btn" data-next="2" style="flex:1;"><span data-t="next">Next</span> →</button>
           </div>
         </div>
 
+        <!-- STEP 2: SHIPPING -->
         <div class="checkout-panel" data-panel="2">
           <h2 data-t="shippingMethod">Shipping Method</h2>
           <label class="shipping-option active" data-shipping="standard" data-price="80">
@@ -89,6 +149,7 @@
           </div>
         </div>
 
+        <!-- STEP 3: PAYMENT -->
         <div class="checkout-panel" data-panel="3">
           <h2 data-t="paymentMethod">Payment Method</h2>
           <label class="payment-option active" data-payment="card">
@@ -116,7 +177,7 @@
     </div>
 
     <aside class="order-summary">
-      <h3 class="summary-title" style="font-family:var(--font-head);font-weight:700;font-size:16px;text-transform:uppercase;margin-bottom:20px;" data-t="orderSummary">Order Summary</h3>
+      <h3 class="summary-title" data-t="orderSummary">Order Summary</h3>
       <div class="order-items" id="orderItems"></div>
       <div class="summary-row"><span data-t="subtotal">Subtotal</span><span id="sumSubtotal">—</span></div>
       <div class="summary-row"><span data-t="shipping">Shipping</span><span id="sumShipping">—</span></div>

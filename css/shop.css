@@ -43,9 +43,62 @@
 .filter-footer { padding: 20px 28px; border-top: 1px solid var(--line); display: flex; gap: 12px; }
 .filter-footer button { flex: 1; }
 .shop-container { position: relative; }
+
+/* ============ QUICK VIEW BUTTON — VISIBLE ON MOBILE ============ */
 @media (max-width: 900px) {
   .shop-toolbar { padding: 14px 20px; gap: 10px; }
   .toolbar-right { width: 100%; }
   .filter-btn, .sort-btn { flex: 1; justify-content: center; }
   .results-info { padding: 14px 20px 0; }
+
+  /* ✅ زر Quick View يظهر على الموبايل بشكل شيك */
+  .product-card-quick {
+    display: flex !important;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--fg);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    opacity: 1;
+    visibility: visible;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  .product-card-quick::before {
+    content: '';
+    display: block;
+    width: 16px;
+    height: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230A0A0A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .product-card-quick:active {
+    transform: scale(0.9);
+    background: var(--fg);
+  }
+  .product-card-quick:active::before {
+    filter: invert(1);
+  }
+
+  [dir="rtl"] .product-card-quick {
+    right: auto;
+    left: 8px;
+  }
 }
