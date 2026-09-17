@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Account — LUX</title>
+<meta name="description" content="Manage your LUX account, orders, and addresses." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lux-eg.com/account.html" />
+<meta property="og:title" content="Account — LUX" />
+<meta property="og:description" content="Manage your LUX account, orders, and addresses." />
+<meta property="og:image" content="https://lux-eg.com/images/look-01.png" />
+<meta property="og:site_name" content="LUX" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Account — LUX" />
+<meta name="twitter:description" content="Manage your LUX account." />
+<meta name="twitter:image" content="https://lux-eg.com/images/look-01.png" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/account.css" />
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<div class="account-page">
+  <aside class="account-side">
+    <div class="account-user">
+      <div class="account-avatar" id="userAvatar">L</div>
+      <div>
+        <div class="account-name" id="userName">LUX User</div>
+        <div class="account-email" id="userEmail">user@lux.com</div>
+      </div>
+    </div>
+    <nav class="account-nav">
+      <button class="active" data-tab="orders" data-t="myOrders">My Orders</button>
+      <button data-tab="profile" data-t="myProfile">My Profile</button>
+      <button data-tab="addresses" data-t="myAddresses">Addresses</button>
+      <button data-tab="wishlist" data-t="myWishlist">My Wishlist</button>
+      <button class="logout-btn" id="logoutBtn" data-t="logout">Logout</button>
+    </nav>
+  </aside>
+
+  <div class="account-content">
+    <div class="account-panel active" data-panel="orders">
+      <h2 data-t="myOrders">My Orders</h2>
+      <div id="ordersList"></div>
+    </div>
+
+    <div class="account-panel" data-panel="profile">
+      <h2 data-t="myProfile">My Profile</h2>
+      <form id="profileForm">
+        <div class="form-group"><label class="form-label" data-t="fullName">Full Name</label><input type="text" class="form-input" name="name" id="profileName"></div>
+        <div class="form-group"><label class="form-label" data-t="email">Email</label><input type="email" class="form-input" name="email" id="profileEmail"></div>
+        <div class="form-group"><label class="form-label" data-t="phone">Phone</label><input type="tel" class="form-input" name="phone" id="profilePhone"></div>
+        <button type="submit" class="btn" data-t="saveChanges">Save Changes</button>
+      </form>
+    </div>
+
+    <div class="account-panel" data-panel="addresses">
+      <h2 data-t="myAddresses">My Addresses</h2>
+      <p style="color:var(--muted);font-size:14px;">No saved addresses yet.</p>
+    </div>
+
+    <div class="account-panel" data-panel="wishlist">
+      <h2 data-t="myWishlist">My Wishlist</h2>
+      <div class="product-grid" id="wishGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-container"></div>
+<div id="drawers-container"></div>
+<div id="modals-container"></div>
+
+<script src="./js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('navbar-container').innerHTML = renderNavbar();
+  document.getElementById('footer-container').innerHTML = renderFooter();
+  document.getElementById('drawers-container').innerHTML = renderDrawers();
+  document.getElementById('modals-container').innerHTML = renderModals();
+  initApp();
+
+  if (!AppState.user) { window.location.href = 'login.html'; return; }
+
+  const u = AppState.user;
+  document.getElementById('userName').textContent = u.name || 'LUX User';
+  document.getElementById('userEmail').textContent = u.email || '';
+  document.getElementById('userAvatar').textContent = (u.name || 'L').charAt(0).toUpperCase();
+  document.getElementById('profileName').value = u.name || '';
+  document.getElementById('profileEmail').value = u.email || '';
+  document.getElementById('profilePhone').value = u.phone || '';
+
+  document.querySelectorAll('.account-nav button[data-tab]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.account-nav button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.account-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector(`.account-panel[data-panel="${btn.dataset.tab}"]`).classList.add('active');
+    }));
+
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+
+  document.getElementById('profileForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    saveUser({ name: data.get('name'), email: data.get('email'), phone: data.get('phone') });
+    showToast('Saved!');
+  });
+
+  function renderOrders() {
+    const list = document.getElementById('ordersList');
+    if (AppState.orders.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          </div>
+          <h2 data-t="noOrders">No orders yet</h2>
+          <p data-t="noOrdersText">Start shopping to place your first order.</p>
+          <a href="shop.html" class="btn" data-t="startShopping">Start Shopping</a>
+        </div>
+      `;
+      applyTranslations();
+      return;
+    }
+    list.innerHTML = AppState.orders.map(o => `
+      <div class="order-card">
+        <div class="order-card-head">
+          <div>
+            <div class="order-card-num">#${o.num}</div>
+            <div class="order-card-date">${new Date(o.date).toLocaleDateString()}</div>
+          </div>
+          <span class="order-card-status ${o.status}">${t(o.status) || o.status}</span>
+        </div>
+        <div class="order-card-items">${o.items.length} ${t('products')} · ${o.items.map(i => i.itemName).join(' · ')}</div>
+        <div class="order-card-total">${formatPrice(o.total)}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderWishlist() {
+    const grid = document.getElementById('wishGrid');
+    const items = PRODUCTS.filter(p => isWishlisted(p.id));
+    if (items.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <h2 data-t="emptyWishlist">Your wishlist is empty</h2>
+          <a href="shop.html" class="btn" data-t="startShopping">Start Shopping</a>
+        </div>
+      `;
+      applyTranslations();
+      return;
+    }
+    grid.innerHTML = items.map(p => productCardHTML(p)).join('');
+  }
+
+  renderOrders();
+  renderWishlist();
+  window.onLanguageChange = () => { renderOrders(); renderWishlist(); };
+});
+</script>
+</body>
+</html>

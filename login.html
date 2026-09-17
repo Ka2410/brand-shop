@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login — LUX</title>
+<meta name="description" content="Sign in or create your LUX account." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lux-eg.com/login.html" />
+<meta property="og:title" content="Login — LUX" />
+<meta property="og:description" content="Sign in or create your LUX account." />
+<meta property="og:image" content="https://lux-eg.com/images/look-01.png" />
+<meta property="og:site_name" content="LUX" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Login — LUX" />
+<meta name="twitter:description" content="Sign in or create your LUX account." />
+<meta name="twitter:image" content="https://lux-eg.com/images/look-01.png" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/login.css" />
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-image"></div>
+  <div class="auth-form-wrap">
+    <a href="index.html" class="auth-back">← Back to LUX</a>
+
+    <div class="auth-inner">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" data-t="login">Login</button>
+        <button class="auth-tab" data-tab="signup" data-t="signup">Sign Up</button>
+      </div>
+
+      <div class="auth-panel active" data-panel="login">
+        <h2 class="auth-title" data-t="welcome">Welcome Back</h2>
+        <p class="auth-sub">Sign in to your LUX account</p>
+        <form id="loginForm">
+          <div class="form-group"><label class="form-label" data-t="email">Email</label><input type="email" class="form-input" name="email" required></div>
+          <div class="form-group"><label class="form-label" data-t="password">Password</label><input type="password" class="form-input" name="password" required minlength="4"></div>
+          <button type="submit" class="btn btn-block" data-t="loginBtn">Login</button>
+        </form>
+        <p class="auth-switch"><span data-t="noAccount">Don't have an account?</span> <a data-switch="signup" data-t="signup">Sign Up</a></p>
+      </div>
+
+      <div class="auth-panel" data-panel="signup">
+        <h2 class="auth-title" data-t="createAccount">Create Account</h2>
+        <p class="auth-sub">Join the movement</p>
+        <form id="signupForm">
+          <div class="form-group"><label class="form-label" data-t="fullName">Full Name</label><input type="text" class="form-input" name="name" required></div>
+          <div class="form-group"><label class="form-label" data-t="email">Email</label><input type="email" class="form-input" name="email" required></div>
+          <div class="form-group"><label class="form-label" data-t="phone">Phone</label><input type="tel" class="form-input" name="phone" required></div>
+          <div class="form-group"><label class="form-label" data-t="password">Password</label><input type="password" class="form-input" name="password" required minlength="4"></div>
+          <button type="submit" class="btn btn-block" data-t="signupBtn">Create Account</button>
+        </form>
+        <p class="auth-switch"><span data-t="haveAccount">Already have an account?</span> <a data-switch="login" data-t="login">Login</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="drawers-container"></div>
+
+<script src="./js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('drawers-container').innerHTML = renderDrawers();
+  initApp();
+
+  document.querySelectorAll('.auth-tab').forEach(tab =>
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector(`.auth-panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+    }));
+
+  document.querySelectorAll('[data-switch]').forEach(a =>
+    a.addEventListener('click', () => {
+      document.querySelector(`.auth-tab[data-tab="${a.dataset.switch}"]`).click();
+    }));
+
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    saveUser({ name: data.get('email').split('@')[0], email: data.get('email') });
+    window.location.href = 'account.html';
+  });
+
+  document.getElementById('signupForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    saveUser({ name: data.get('name'), email: data.get('email'), phone: data.get('phone') });
+    window.location.href = 'account.html';
+  });
+});
+</script>
+</body>
+</html>

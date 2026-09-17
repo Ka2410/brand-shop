@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shop — LUX</title>
+<meta name="description" content="Shop all LUX products — graphic tees, baggy denim, oversized fits. Egyptian streetwear." />
+
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lux-eg.com/shop.html" />
+<meta property="og:title" content="Shop — LUX" />
+<meta property="og:description" content="Browse all LUX products. Graphic tees, baggy denim, oversized fits." />
+<meta property="og:image" content="https://lux-eg.com/images/look-01.png" />
+<meta property="og:site_name" content="LUX" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Shop — LUX" />
+<meta name="twitter:description" content="Browse all LUX products. Graphic tees, baggy denim, oversized fits." />
+<meta name="twitter:image" content="https://lux-eg.com/images/look-01.png" />
+
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/shop.css" />
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="index.html">Home</a> / <span data-t="shop">Shop</span></div>
+  <h1 data-t="allProducts">All Products</h1>
+</div>
+
+<div class="shop-toolbar">
+  <div class="toolbar-left">
+    <button class="chip active" data-cat="all">All</button>
+    <button class="chip" data-cat="graphic-tees">Graphic Tees</button>
+    <button class="chip" data-cat="baggy-denim">Baggy Denim</button>
+    <button class="chip" data-cat="oversized-fits">Oversized</button>
+  </div>
+  <div class="toolbar-right">
+    <button class="filter-btn" id="filterBtn">
+      <svg viewBox="0 0 24 24"><polygon points="3,5 21,5 15,12 15,19 9,21 9,12 3,5"/></svg>
+      <span data-t="filter">Filter</span>
+    </button>
+    <button class="sort-btn" id="sortBtn">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="18" x2="12" y2="18"/></svg>
+      <span data-t="sortBy">Sort</span>
+    </button>
+  </div>
+</div>
+
+<div class="results-info" id="resultsInfo"></div>
+<div class="container shop-container">
+  <div class="filter-loading" id="filterLoading">
+    <div class="filter-loading-spinner"></div>
+  </div>
+  <div class="product-grid" id="shopGrid"></div>
+</div>
+
+<aside class="filter-drawer" id="filterDrawer">
+  <div class="cart-header">
+    <h3 data-t="filterTitle">Filters</h3>
+    <button class="close-btn" id="filterClose">×</button>
+  </div>
+  <div class="filter-body">
+    <div class="filter-group"><h4 data-t="size">Size</h4><div class="filter-options" id="sizeOptions"></div></div>
+    <div class="filter-group"><h4 data-t="color">Color</h4><div class="filter-options" id="colorOptions"></div></div>
+  </div>
+  <div class="filter-footer">
+    <button class="btn btn-ghost" id="filterClear" data-t="resetFilters">Reset</button>
+    <button class="btn" id="filterApply" data-t="apply">Apply</button>
+  </div>
+</aside>
+
+<aside class="filter-drawer" id="sortDrawer">
+  <div class="cart-header">
+    <h3 data-t="sortBy">Sort By</h3>
+    <button class="close-btn" id="sortClose">×</button>
+  </div>
+  <div class="filter-body">
+    <div class="filter-options" style="flex-direction:column;gap:0;">
+      <button class="filter-option" data-sort="newest" style="width:100%;text-align:left;padding:16px;" data-t="newest">Newest</button>
+      <button class="filter-option" data-sort="price-low" style="width:100%;text-align:left;padding:16px;">Price: Low to High</button>
+      <button class="filter-option" data-sort="price-high" style="width:100%;text-align:left;padding:16px;">Price: High to Low</button>
+      <button class="filter-option active" data-sort="popular" style="width:100%;text-align:left;padding:16px;">Popular</button>
+    </div>
+  </div>
+</aside>
+
+<div id="footer-container"></div>
+<div id="drawers-container"></div>
+<div id="modals-container"></div>
+
+<script src="./js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('navbar-container').innerHTML = renderNavbar();
+  document.getElementById('footer-container').innerHTML = renderFooter();
+  document.getElementById('drawers-container').innerHTML = renderDrawers();
+  document.getElementById('modals-container').innerHTML = renderModals();
+  initApp();
+
+  const shopGrid = document.getElementById('shopGrid');
+  const resultsInfo = document.getElementById('resultsInfo');
+  const sizeOptions = document.getElementById('sizeOptions');
+  const colorOptions = document.getElementById('colorOptions');
+  const filterLoading = document.getElementById('filterLoading');
+
+  const filters = { category: 'all', sizes: [], colors: [], sort: 'popular' };
+
+  const allSizes = new Set();
+  const allColors = new Map();
+  PRODUCTS.forEach(p => {
+    p.sizes.forEach(s => allSizes.add(s));
+    p.colors.forEach(c => allColors.set(c.name, c.hex));
+  });
+
+  sizeOptions.innerHTML = [...allSizes].map(s => `<button class="filter-option" data-size="${s}">${s}</button>`).join('');
+  colorOptions.innerHTML = [...allColors.entries()].map(([name, hex]) =>
+    `<button class="color-option" data-color="${name}" style="background:${hex};" title="${name}"></button>`
+  ).join('');
+
+  function showSkeletons() {
+    shopGrid.innerHTML = Array(6).fill(0).map(() => `
+      <div class="product-card skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-text short"></div>
+        <div class="skeleton-text long"></div>
+        <div class="skeleton-text medium"></div>
+      </div>
+    `).join('');
+  }
+
+  function renderShop(showLoading = false) {
+    if (showLoading) {
+      filterLoading.classList.add('show');
+    }
+
+    setTimeout(() => {
+      let list = [...PRODUCTS];
+      if (filters.category !== 'all') list = list.filter(p => p.category === filters.category);
+      if (filters.sizes.length) list = list.filter(p => p.sizes.some(s => filters.sizes.includes(s)));
+      if (filters.colors.length) list = list.filter(p => p.colors.some(c => filters.colors.includes(c.name)));
+      if (filters.sort === 'price-low') list.sort((a,b) => a.price - b.price);
+      else if (filters.sort === 'price-high') list.sort((a,b) => b.price - a.price);
+      else if (filters.sort === 'newest') list.sort((a,b) => b.id - a.id);
+
+      if (list.length === 0) {
+        shopGrid.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1;">
+            <div class="empty-state-icon">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+            </div>
+            <h2 data-t="noProducts">No products match your filters</h2>
+            <button class="btn" onclick="document.getElementById('filterClear').click()">${t('resetFilters')}</button>
+          </div>
+        `;
+      } else {
+        shopGrid.innerHTML = list.map(p => productCardHTML(p)).join('');
+      }
+
+      resultsInfo.textContent = `${t('showing')} ${num(list.length)} ${t('products')}`;
+      filterLoading.classList.remove('show');
+    }, showLoading ? 200 : 0);
+  }
+
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      filters.category = chip.dataset.cat;
+      renderShop(true);
+    });
+  });
+
+  sizeOptions.addEventListener('click', e => {
+    const btn = e.target.closest('[data-size]'); if (!btn) return;
+    const size = btn.dataset.size;
+    const i = filters.sizes.indexOf(size);
+    if (i >= 0) filters.sizes.splice(i, 1); else filters.sizes.push(size);
+    btn.classList.toggle('active');
+  });
+  colorOptions.addEventListener('click', e => {
+    const btn = e.target.closest('[data-color]'); if (!btn) return;
+    const color = btn.dataset.color;
+    const i = filters.colors.indexOf(color);
+    if (i >= 0) filters.colors.splice(i, 1); else filters.colors.push(color);
+    btn.classList.toggle('active');
+  });
+
+  document.getElementById('filterBtn').addEventListener('click', () => openDrawer(document.getElementById('filterDrawer')));
+  document.getElementById('filterClose').addEventListener('click', closeAllDrawers);
+  document.getElementById('filterApply').addEventListener('click', () => { renderShop(true); closeAllDrawers(); });
+  document.getElementById('filterClear').addEventListener('click', () => {
+    filters.sizes = []; filters.colors = [];
+    document.querySelectorAll('.filter-option.active').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.color-option.active').forEach(b => b.classList.remove('active'));
+    renderShop(true);
+  });
+
+  document.getElementById('sortBtn').addEventListener('click', () => openDrawer(document.getElementById('sortDrawer')));
+  document.getElementById('sortClose').addEventListener('click', closeAllDrawers);
+  document.querySelectorAll('[data-sort]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      filters.sort = btn.dataset.sort;
+      document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderShop(true); closeAllDrawers();
+    });
+  });
+
+  if (window.location.hash) {
+    const cat = window.location.hash.substring(1);
+    const chip = document.querySelector(`.chip[data-cat="${cat}"]`);
+    if (chip) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      filters.category = cat;
+    }
+  }
+
+  showSkeletons();
+  setTimeout(() => renderShop(), 300);
+
+  window.onLanguageChange = () => renderShop();
+});
+</script>
+</body>
+</html>

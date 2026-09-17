@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>LUX — Egyptian Streetwear</title>
+<meta name="description" content="LUX — Egyptian streetwear born in Cairo. 90s nostalgia meets modern design. Shop graphic tees, baggy denim, oversized fits." />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lux-eg.com/" />
+<meta property="og:title" content="LUX — Egyptian Streetwear" />
+<meta property="og:description" content="Egyptian streetwear born in Cairo. 90s nostalgia meets modern design." />
+<meta property="og:image" content="https://lux-eg.com/images/look-01.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content="LUX" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="ar_EG" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="LUX — Egyptian Streetwear" />
+<meta name="twitter:description" content="Egyptian streetwear born in Cairo. 90s nostalgia meets modern design." />
+<meta name="twitter:image" content="https://lux-eg.com/images/look-01.png" />
+
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/home.css" />
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<section class="hero">
+  <div class="hero-info">
+    <button class="ar" id="arBtn" style="font-family:var(--font-ar);font-size:12px;margin-bottom:10px;opacity:0.6;">← عربي</button>
+    <h1 class="hero-title" id="heroTitle">NYC GRAFFITI<br>GRAPHIC TEE</h1>
+    <div class="hero-price" id="heroPrice">EGP 999.99</div>
+  </div>
+
+  <div class="hero-thumbs" id="heroThumbs"></div>
+
+  <div class="swiper hero-swiper" id="heroSwiper">
+    <div class="swiper-wrapper" id="heroWrapper"></div>
+  </div>
+
+  <div class="hero-bottom">
+    <a href="product.html?slug=nyc-graffiti" class="btn hero-btn" id="heroBtn">
+      <span data-t="shop">Shop Now</span>
+    </a>
+
+    <div class="hero-scroll-wrap">
+      <div class="hero-chapters" id="heroChapters"></div>
+    </div>
+
+    <div class="hero-counter">
+      <span class="current" id="heroCurrent">01</span>
+      <span class="sep"></span>
+      <span class="total" id="heroTotal">10</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title">Featured</h2>
+    <a href="shop.html" class="section-link">Shop All →</a>
+  </div>
+  <div class="product-grid" id="featuredGrid"></div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title">Collections</h2>
+  </div>
+  <div class="collections-grid">
+    <a href="shop.html#graphic-tees" class="collection-card">
+      <img src="./images/look-01.png" alt="Graphic Tees">
+      <div class="collection-card-info"><h3>Graphic Tees</h3><p>Bold prints, soft cotton</p></div>
+    </a>
+    <a href="shop.html#baggy-denim" class="collection-card">
+      <img src="./images/look-10.png" alt="Baggy Denim">
+      <div class="collection-card-info"><h3>Baggy Denim</h3><p>Wide legs, big vibes</p></div>
+    </a>
+    <a href="shop.html#oversized-fits" class="collection-card">
+      <img src="./images/look-03.png" alt="Oversized Fits">
+      <div class="collection-card-info"><h3>Oversized Fits</h3><p>Comfort meets statement</p></div>
+    </a>
+  </div>
+</section>
+
+<section class="recently-viewed" id="recentlyViewedSection" style="display:none;">
+  <div class="section-head">
+    <h2 class="section-title" data-t="recentlyViewed">Recently Viewed</h2>
+  </div>
+  <div class="product-grid" id="recentlyViewedGrid"></div>
+</section>
+
+<section class="instagram-feed">
+  <h2 data-t="followUs">Follow us on Instagram</h2>
+  <a href="https://instagram.com/ka__2410" target="_blank" rel="noopener" class="handle">@ka__2410</a>
+  <div class="instagram-grid" id="instagramGrid"></div>
+</section>
+
+<section class="newsletter">
+  <h2 data-t="newsletter">Join the Movement</h2>
+  <p>Be the first to know about new drops, exclusive releases, and behind-the-scenes.</p>
+  <form class="newsletter-form" onsubmit="event.preventDefault(); showToast(t('subscribed')); this.reset();">
+    <input type="email" placeholder="Your email" data-t-ph="emailPlaceholder" required>
+    <button type="submit" data-t="subscribe">Subscribe</button>
+  </form>
+</section>
+
+<div id="footer-container"></div>
+<div id="drawers-container"></div>
+<div id="modals-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="./js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('navbar-container').innerHTML = renderNavbar();
+  document.getElementById('footer-container').innerHTML = renderFooter();
+  document.getElementById('drawers-container').innerHTML = renderDrawers();
+  document.getElementById('modals-container').innerHTML = renderModals();
+  initApp();
+
+  const heroWrapper = document.getElementById('heroWrapper');
+  PRODUCTS.forEach(p => {
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    slide.innerHTML = `<img class="hero-img" src="${p.images[0]}" alt="${p.lookName}" loading="${p.id < 3 ? 'eager' : 'lazy'}">`;
+    heroWrapper.appendChild(slide);
+  });
+
+  const heroSwiper = new Swiper('#heroSwiper', {
+    slidesPerView: 'auto',
+    centeredSlides: true,
+    loop: true,
+    rtl: false,
+    speed: 800,
+    grabCursor: true,
+    mousewheel: { forceToAxis: true, sensitivity: 1, releaseOnEdges: false },
+    keyboard: { enabled: true }
+  });
+
+  const heroTitle = document.getElementById('heroTitle');
+  const heroPrice = document.getElementById('heroPrice');
+  const heroBtn = document.getElementById('heroBtn');
+  const heroCurrent = document.getElementById('heroCurrent');
+  const heroThumbs = document.getElementById('heroThumbs');
+  const heroChapters = document.getElementById('heroChapters');
+  document.getElementById('heroTotal').textContent = String(PRODUCTS.length).padStart(2, '0');
+
+  function renderHero(index) {
+    const p = PRODUCTS[index];
+    heroTitle.innerHTML = `${AppState.isRTL ? p.lookNameAr : p.lookName}<br>${AppState.isRTL ? p.itemNameAr : p.itemName}`;
+    heroPrice.textContent = formatPrice(p.price);
+    heroBtn.href = `product.html?slug=${p.slug}`;
+    heroCurrent.textContent = num(String(index + 1).padStart(2, '0'));
+
+    heroChapters.innerHTML = PRODUCTS.map((pp, i) => {
+      const chapterNum = String(i + 1).padStart(2, '0');
+      return `
+        <button class="hero-chapter ${i === index ? 'active' : ''}"
+                data-chapter="${i}"
+                aria-label="${AppState.isRTL ? pp.lookNameAr : pp.lookName}">
+          <span class="hero-chapter-num">${num(chapterNum)}</span>
+        </button>
+      `;
+    }).join('');
+
+    heroChapters.querySelectorAll('[data-chapter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        heroSwiper.slideToLoop(parseInt(btn.dataset.chapter, 10));
+      });
+    });
+
+    heroThumbs.innerHTML = PRODUCTS.map((pp, i) =>
+      `<button class="hero-thumb ${i === index ? 'active' : ''}" data-idx="${i}"
+              style="background-image:url('${pp.images[0]}')" aria-label="${pp.lookName}"></button>`
+    ).join('');
+  }
+
+  heroThumbs.addEventListener('click', e => {
+    const thumb = e.target.closest('.hero-thumb');
+    if (thumb) heroSwiper.slideToLoop(parseInt(thumb.dataset.idx, 10));
+  });
+
+  heroSwiper.on('slideChange', () => renderHero(heroSwiper.realIndex));
+  renderHero(0);
+
+  const featuredGrid = document.getElementById('featuredGrid');
+  function renderFeatured() {
+    featuredGrid.innerHTML = PRODUCTS.slice(0, 4).map(p => productCardHTML(p)).join('');
+  }
+  renderFeatured();
+
+  const rvProducts = AppState.recentlyViewed.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
+  if (rvProducts.length >= 2) {
+    document.getElementById('recentlyViewedSection').style.display = 'block';
+    document.getElementById('recentlyViewedGrid').innerHTML = rvProducts.map(p => productCardHTML(p)).join('');
+  }
+
+  const igImages = ['./images/look-01.png','./images/look-02.png','./images/look-03.png','./images/look-04.png','./images/look-05.png','./images/look-06.png'];
+  document.getElementById('instagramGrid').innerHTML = igImages.map(img =>
+    `<a href="https://instagram.com/ka__2410" target="_blank" rel="noopener" class="instagram-post" style="background-image:url('${img}')"></a>`
+  ).join('');
+
+  window.onLanguageChange = () => {
+    renderHero(heroSwiper.realIndex);
+    renderFeatured();
+  };
+});
+</script>
+</body>
+</html>

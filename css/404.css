@@ -1,0 +1,109 @@
+/* ============ 404 PAGE ============ */
+.error-page {
+  min-height: calc(100vh - 300px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px var(--pad-x);
+  position: relative;
+  overflow: hidden;
+}
+
+.error-visual {
+  position: relative;
+  margin-bottom: 40px;
+  display: inline-block;
+}
+.error-num {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(140px, 26vw, 300px);
+  letter-spacing: -0.08em;
+  line-height: 0.85;
+  color: var(--fg);
+  position: relative;
+  z-index: 2;
+}
+.error-num-outline {
+  position: absolute;
+  top: 0; left: 0;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(140px, 26vw, 300px);
+  letter-spacing: -0.08em;
+  line-height: 0.85;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--line);
+  z-index: 1;
+  transform: translate(10px, 10px);
+  pointer-events: none;
+}
+[dir="rtl"] .error-num-outline { transform: translate(-10px, 10px); }
+
+.error-page h1 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(28px, 3.5vw, 40px);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+  line-height: 1;
+  max-width: 600px;
+}
+[dir="rtl"] .error-page h1 {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.error-page > p {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 36px;
+  max-width: 460px;
+  line-height: 1.75;
+}
+[dir="rtl"] .error-page > p {
+  font-family: var(--font-ar);
+  font-size: 16px;
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 60px;
+}
+
+.error-suggestions {
+  width: 100%;
+  max-width: 1000px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+.error-suggestions-title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 32px;
+  text-align: center;
+}
+[dir="rtl"] .error-suggestions-title {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .error-page { padding: 60px 20px; min-height: auto; }
+  .error-num-outline { -webkit-text-stroke-width: 1px; transform: translate(6px, 6px); }
+  [dir="rtl"] .error-num-outline { transform: translate(-6px, 6px); }
+  .error-actions { flex-direction: column; align-items: stretch; max-width: 320px; margin-left: auto; margin-right: auto; }
+}

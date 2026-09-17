@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Product — LUX</title>
+<meta name="description" content="Shop authentic LUX Egyptian streetwear pieces." />
+<meta property="og:type" content="product" />
+<meta property="og:url" content="https://lux-eg.com/product.html" />
+<meta property="og:title" content="Product — LUX" />
+<meta property="og:description" content="Shop authentic LUX Egyptian streetwear pieces." />
+<meta property="og:image" content="https://lux-eg.com/images/look-01.png" />
+<meta property="og:site_name" content="LUX" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Product — LUX" />
+<meta name="twitter:description" content="Shop authentic LUX Egyptian streetwear pieces." />
+<meta name="twitter:image" content="https://lux-eg.com/images/look-01.png" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/product.css" />
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<div class="pdp" id="pdp"></div>
+
+<!-- REVIEWS SECTION -->
+<section class="pdp-reviews" id="reviewsSection" style="display:none;">
+  <div class="pdp-reviews-header">
+    <div class="pdp-reviews-summary">
+      <div class="pdp-reviews-rating-big" id="reviewsRatingBig">4.8</div>
+      <div class="pdp-reviews-meta">
+        <div class="stars" id="reviewsStarsBig"></div>
+        <div class="pdp-reviews-count" id="reviewsCount"></div>
+      </div>
+    </div>
+    <button class="btn btn-ghost btn-sm" data-t="writeReview">Write a Review</button>
+  </div>
+  <div class="pdp-reviews-list" id="reviewsList"></div>
+</section>
+
+<section class="related-section">
+  <div class="section-head">
+    <h2 class="section-title" data-t="youMayLike">You May Also Like</h2>
+  </div>
+  <div class="product-grid" id="relatedGrid"></div>
+</section>
+
+<div class="mobile-sticky-add">
+  <div class="mobile-sticky-info">
+    <div class="mobile-sticky-name" id="stickyName">Product</div>
+    <div class="mobile-sticky-price" id="stickyPrice">EGP 0</div>
+  </div>
+  <div class="mobile-sticky-actions">
+    <button class="btn btn-ghost" id="stickyAddBtn"><span data-t="addToBag">Add to Bag</span></button>
+    <button class="btn" id="stickyBuyBtn"><span data-t="buyNow">Buy Now</span></button>
+  </div>
+</div>
+
+<div id="footer-container"></div>
+<div id="drawers-container"></div>
+<div id="modals-container"></div>
+
+<script src="./js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('navbar-container').innerHTML = renderNavbar();
+  document.getElementById('footer-container').innerHTML = renderFooter();
+  document.getElementById('drawers-container').innerHTML = renderDrawers();
+  document.getElementById('modals-container').innerHTML = renderModals();
+  initApp();
+
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('slug') || 'nyc-graffiti';
+  const product = PRODUCTS.find(p => p.slug === slug) || PRODUCTS[0];
+
+  addToRecentlyViewed(product.id);
+
+  /* ===== Dynamic OG Tags ===== */
+  const updateMeta = (selector, value) => {
+    const el = document.querySelector(selector);
+    if (el) el.setAttribute('content', value);
+  };
+  const productTitle = `${product.lookName} — ${product.itemName} | LUX`;
+  const productDesc = product.description;
+  const productImg = `https://lux-eg.com${product.images[0].replace('./', '/')}`;
+
+  document.title = productTitle;
+  updateMeta('meta[name="description"]', productDesc);
+  updateMeta('meta[property="og:title"]', productTitle);
+  updateMeta('meta[property="og:description"]', productDesc);
+  updateMeta('meta[property="og:image"]', productImg);
+  updateMeta('meta[property="og:url"]', `https://lux-eg.com/product.html?slug=${product.slug}`);
+  updateMeta('meta[name="twitter:title"]', productTitle);
+  updateMeta('meta[name="twitter:description"]', productDesc);
+  updateMeta('meta[name="twitter:image"]', productImg);
+
+  let selectedSize = null;
+  let selectedColor = product.colors[0];
+
+  /* ===== Trust signals HTML ===== */
+  function trustSignalsHTML() {
+    return `
+      <div class="pdp-trust-signals">
+        <div class="trust-signal">
+          <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+          <span data-t="trustFreeShipping">${t('trustFreeShipping')}</span>
+        </div>
+        <div class="trust-signal">
+          <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+          <span data-t="trustReturns">${t('trustReturns')}</span>
+        </div>
+        <div class="trust-signal">
+          <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+          <span data-t="trustCOD">${t('trustCOD')}</span>
+        </div>
+        <div class="trust-signal">
+          <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+          <span data-t="trustFastShip">${t('trustFastShip')}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ===== Social proof HTML ===== */
+  function socialProofHTML() {
+    const rating = product.rating || 0;
+    const reviewCount = product.reviewCount || 0;
+    const soldCount = product.soldCount || 0;
+    if (!rating) return '';
+
+    return `
+      <div class="pdp-social-proof">
+        <div class="pdp-social-proof-item">
+          <span class="stars">${starsHTML(rating, 13)}</span>
+          <strong>${rating.toFixed(1)}</strong>
+          <span>(${num(reviewCount)})</span>
+        </div>
+        <div class="pdp-social-proof-item verified">
+          <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+          <span>${t('sold', { n: num(soldCount) })}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ===== Reviews HTML ===== */
+  function renderReviews() {
+    const section = document.getElementById('reviewsSection');
+    const list = document.getElementById('reviewsList');
+    const bigRating = document.getElementById('reviewsRatingBig');
+    const bigStars = document.getElementById('reviewsStarsBig');
+    const countEl = document.getElementById('reviewsCount');
+
+    const reviews = REVIEWS[product.id] || [];
+    if (!reviews.length) { section.style.display = 'none'; return; }
+
+    section.style.display = 'block';
+    bigRating.textContent = product.rating.toFixed(1);
+    bigStars.innerHTML = starsHTML(product.rating, 18);
+    countEl.textContent = t('basedOn', { n: num(product.reviewCount) });
+
+    list.innerHTML = reviews.map(r => {
+      const name = AppState.isRTL ? r.nameAr : r.name;
+      const date = AppState.isRTL ? r.dateAr : r.date;
+      const text = AppState.isRTL ? r.textAr : r.text;
+      return `
+        <div class="review-card">
+          <div class="review-head">
+            <div class="review-avatar">${escapeHtml(name.charAt(0))}</div>
+            <div class="review-head-info">
+              <div class="review-name">
+                ${escapeHtml(name)}
+                ${r.verified ? `
+                  <span class="review-verified">
+                    <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+                    ${t('verifiedBuyer')}
+                  </span>
+                ` : ''}
+              </div>
+              <div class="review-date">${escapeHtml(date)}</div>
+            </div>
+          </div>
+          <div class="review-stars">${starsHTML(r.rating, 14)}</div>
+          <div class="review-text">${escapeHtml(text)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  /* ===== Main PDP render ===== */
+  function renderPDP() {
+    const lookName = AppState.isRTL ? product.lookNameAr : product.lookName;
+    const itemName = AppState.isRTL ? product.itemNameAr : product.itemName;
+    const desc = AppState.isRTL ? product.descriptionLongAr : product.descriptionLong;
+    const whyText = AppState.isRTL ? product.whyWeMadeItAr : product.whyWeMadeIt;
+    const fitText = {
+      'Oversized': t('fitOversized'),
+      'Regular': t('fitRegular'),
+      'Relaxed': t('fitRelaxed'),
+      'Slim': t('fitSlim')
+    }[product.fit] || product.fit;
+    const stockHtml = product.stock <= 5 ? `<div class="pdp-stock">${t('lowStock', { n: num(product.stock) })}</div>` : '';
+
+    document.getElementById('pdp').innerHTML = `
+      <div class="pdp-gallery">
+        <div class="pdp-image">
+          <img src="${product.images[0]}" alt="${lookName}">
+        </div>
+      </div>
+      <div class="pdp-info">
+        <div class="pdp-breadcrumb">
+          <a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <span>${itemName}</span>
+        </div>
+        <div class="pdp-look">${lookName}</div>
+        <h1 class="pdp-title">${itemName}</h1>
+
+        ${socialProofHTML()}
+
+        <div class="pdp-price-row">
+          <div class="pdp-price">${formatPrice(product.price)}</div>
+          ${product.comparePrice ? `
+            <div class="pdp-compare">${formatPrice(product.comparePrice)}</div>
+            <div class="pdp-save">${t('save')} ${formatPrice(product.comparePrice - product.price)}</div>
+          ` : ''}
+        </div>
+        ${stockHtml}
+
+        <div class="pdp-section">
+          <div class="pdp-section-header">
+            <span class="pdp-section-label">${t('color')}</span>
+            <span class="pdp-section-link" id="colorName">${AppState.isRTL ? selectedColor.nameAr : selectedColor.name}</span>
+          </div>
+          <div class="pdp-colors">
+            ${product.colors.map((c, i) => {
+              const isLight = c.hex === '#FFFFFF' || c.hex === '#F5F3EE' || c.hex === '#E5DFF0';
+              return `
+                <button class="pdp-color ${selectedColor.name === c.name ? 'active' : ''}"
+                        data-color-idx="${i}"
+                        data-light="${isLight}"
+                        aria-label="${c.name}">
+                  <div class="pdp-color-inner" style="background:${c.hex};"></div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <div class="pdp-section">
+          <div class="pdp-section-header">
+            <span class="pdp-section-label">${t('size')}</span>
+            <button class="pdp-section-link" id="sizeGuideBtn">${t('sizeGuide')}</button>
+          </div>
+          <div class="pdp-sizes">
+            ${product.sizes.map(s => `
+              <button class="pdp-size ${selectedSize === s ? 'active' : ''}" data-size="${s}">${s}</button>
+            `).join('')}
+          </div>
+          <div class="pdp-fit-row">
+            <span class="pdp-fit">${t('fit')}: ${fitText}</span>
+            <span class="pdp-fit-note">${AppState.isRTL ? 'لو بين مقاسين، خد الأصغر للأوفرسايز' : 'Between sizes? Size down for oversized fits'}</span>
+          </div>
+        </div>
+
+        <div class="pdp-add-row">
+          <button class="btn pdp-add-btn" id="addBtn"><span data-t="addToBag">Add to Bag</span></button>
+          <button class="pdp-wish-btn ${isWishlisted(product.id) ? 'active' : ''}" id="wishBtn" aria-label="Wishlist">
+            <svg viewBox="0 0 24 24"><path d="M20.8 4.6c-2-2-5.2-2-7.1 0L12 6.3l-1.7-1.7c-1.9-2-5.1-2-7.1 0-2 2-2 5.2 0 7.1L12 20.5l8.8-8.8c2-1.9 2-5.1 0-7.1z"/></svg>
+          </button>
+        </div>
+
+        <button class="pdp-buy-now" id="buyNowBtn">
+          <span data-t="buyNow">Buy Now</span>
+        </button>
+
+        ${trustSignalsHTML()}
+
+        <div class="pdp-why">
+          <div class="pdp-why-label">${t('whyWeMadeIt')}</div>
+          <div class="pdp-why-text">"${whyText}"</div>
+        </div>
+
+        <div class="pdp-accordion">
+          <div class="pdp-accordion-item open">
+            <button class="pdp-accordion-trigger">${t('description')}</button>
+            <div class="pdp-accordion-content"><div class="pdp-accordion-content-inner">${desc}</div></div>
+          </div>
+          <div class="pdp-accordion-item">
+            <button class="pdp-accordion-trigger">${t('materials')}</button>
+            <div class="pdp-accordion-content"><div class="pdp-accordion-content-inner">${product.materials}</div></div>
+          </div>
+          <div class="pdp-accordion-item">
+            <button class="pdp-accordion-trigger">${t('care')}</button>
+            <div class="pdp-accordion-content"><div class="pdp-accordion-content-inner">${product.care}</div></div>
+          </div>
+          <div class="pdp-accordion-item">
+            <button class="pdp-accordion-trigger">${t('shippingInfo')}</button>
+            <div class="pdp-accordion-content"><div class="pdp-accordion-content-inner">${AppState.isRTL ? 'شحن مجاني للطلبات فوق ٢٠٠٠ جنيه. إرجاع خلال ١٤ يوم.' : 'Free shipping on orders over EGP 2000. Easy returns within 14 days.'}</div></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('stickyName').textContent = itemName;
+    document.getElementById('stickyPrice').textContent = formatPrice(product.price);
+
+    document.querySelectorAll('.pdp-accordion-trigger').forEach(btn =>
+      btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
+
+    document.querySelectorAll('[data-color-idx]').forEach(btn =>
+      btn.addEventListener('click', () => {
+        selectedColor = product.colors[parseInt(btn.dataset.colorIdx, 10)];
+        document.querySelectorAll('.pdp-color').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('colorName').textContent = AppState.isRTL ? selectedColor.nameAr : selectedColor.name;
+      }));
+
+    document.querySelectorAll('.pdp-size[data-size]').forEach(btn =>
+      btn.addEventListener('click', () => {
+        selectedSize = btn.dataset.size;
+        document.querySelectorAll('.pdp-size').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }));
+
+    const addFn = () => {
+      if (!selectedSize) { showToast(t('sizeRequired')); return; }
+      addToCart(product, selectedSize, selectedColor);
+      showToast(`${t('itemAdded')} — ${itemName}`);
+      if (navigator.vibrate) navigator.vibrate(15);
+    };
+
+    const buyNowFn = () => {
+      if (!selectedSize) { showToast(t('sizeRequired')); return; }
+      addToCart(product, selectedSize, selectedColor);
+      window.location.href = 'checkout.html';
+    };
+
+    document.getElementById('addBtn').addEventListener('click', addFn);
+    document.getElementById('stickyAddBtn').addEventListener('click', addFn);
+    document.getElementById('buyNowBtn').addEventListener('click', buyNowFn);
+    document.getElementById('stickyBuyBtn').addEventListener('click', buyNowFn);
+
+    document.getElementById('sizeGuideBtn').addEventListener('click', openSizeGuide);
+
+    const wishBtn = document.getElementById('wishBtn');
+    wishBtn.addEventListener('click', () => {
+      const added = toggleWishlist(product.id);
+      wishBtn.classList.toggle('active', added);
+      showToast(added ? t('wishAdded') : t('wishRemoved'));
+    });
+  }
+
+  function renderRelated() {
+    const grid = document.getElementById('relatedGrid');
+    grid.innerHTML = PRODUCTS.filter(p => p.id !== product.id).slice(0, 4).map(p => productCardHTML(p)).join('');
+  }
+
+  renderPDP();
+  renderReviews();
+  renderRelated();
+  window.onLanguageChange = () => { renderPDP(); renderReviews(); renderRelated(); };
+});
+</script>
+</body>
+</html>

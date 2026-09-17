@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Journal — LUX</title>
+<meta name="description" content="LUX Journal — stories from the streets of Cairo. Egyptian streetwear culture, design, and more." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lux-eg.com/blog.html" />
+<meta property="og:title" content="Journal — LUX" />
+<meta property="og:description" content="Stories from the streets of Cairo." />
+<meta property="og:image" content="https://lux-eg.com/images/look-01.png" />
+<meta property="og:site_name" content="LUX" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Journal — LUX" />
+<meta name="twitter:description" content="Stories from the streets of Cairo." />
+<meta name="twitter:image" content="https://lux-eg.com/images/look-01.png" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/blog.css" />
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="index.html">Home</a> / <span data-t="blog">Journal</span></div>
+  <h1 data-t="blog">Journal</h1>
+  <p data-t="blogHeroText">Stories from the streets of Cairo.</p>
+</div>
+
+<div class="blog-featured">
+  <div class="blog-featured-image"><img src="./images/look-01.png" alt="Featured"></div>
+  <div class="blog-featured-content">
+    <span class="blog-tag" data-t="blogFeaturedTag">Featured</span>
+    <h1 data-t="blogFeaturedTitle">The Rise of Egyptian Streetwear</h1>
+    <p data-t="blogFeaturedExcerpt">How a new generation of Egyptian designers is reshaping the global streetwear conversation — one drop at a time.</p>
+    <div class="blog-meta"><span data-t="readTime5">5 min read</span> · <span data-t="dateDec2025">Dec 2025</span></div>
+  </div>
+</div>
+
+<div class="blog-grid">
+  <article class="blog-card">
+    <div class="blog-card-image"><img src="./images/look-03.png" alt="Article"></div>
+    <h3 data-t="blogArticle1Title">Behind the Orange: Our Statement Piece</h3>
+    <p data-t="blogArticle1Excerpt">The story behind our boldest drop yet.</p>
+    <div class="blog-meta" data-t="readTime3">3 min read</div>
+  </article>
+  <article class="blog-card">
+    <div class="blog-card-image"><img src="./images/look-05.png" alt="Article"></div>
+    <h3 data-t="blogArticle2Title">Vintage Washes, Modern Fits</h3>
+    <p data-t="blogArticle2Excerpt">Why we love the 90s — and how we're bringing it back.</p>
+    <div class="blog-meta" data-t="readTime4">4 min read</div>
+  </article>
+  <article class="blog-card">
+    <div class="blog-card-image"><img src="./images/look-06.png" alt="Article"></div>
+    <h3 data-t="blogArticle3Title">The Return of Baggy</h3>
+    <p data-t="blogArticle3Excerpt">Skinny is out, baggy is in.</p>
+    <div class="blog-meta" data-t="readTime3">3 min read</div>
+  </article>
+  <article class="blog-card">
+    <div class="blog-card-image"><img src="./images/look-02.png" alt="Article"></div>
+    <h3 data-t="blogArticle4Title">Minimalism in Streetwear</h3>
+    <p data-t="blogArticle4Excerpt">How "less is more" became the most powerful statement.</p>
+    <div class="blog-meta" data-t="readTime5">5 min read</div>
+  </article>
+  <article class="blog-card">
+    <div class="blog-card-image"><img src="./images/look-04.png" alt="Article"></div>
+    <h3 data-t="blogArticle5Title">Free Your Mind: The Story of a Print</h3>
+    <p data-t="blogArticle5Excerpt">From a sketch on a napkin to a bestseller.</p>
+    <div class="blog-meta" data-t="readTime4">4 min read</div>
+  </article>
+  <article class="blog-card">
+    <div class="blog-card-image"><img src="./images/look-01.png" alt="Article"></div>
+    <h3 data-t="blogArticle6Title">Building LUX: Year One</h3>
+    <p data-t="blogArticle6Excerpt">Reflections on our first year — the wins, the losses, the lessons.</p>
+    <div class="blog-meta" data-t="readTime6">6 min read</div>
+  </article>
+</div>
+
+<div id="footer-container"></div>
+<div id="drawers-container"></div>
+<div id="modals-container"></div>
+
+<script src="./js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('navbar-container').innerHTML = renderNavbar();
+  document.getElementById('footer-container').innerHTML = renderFooter();
+  document.getElementById('drawers-container').innerHTML = renderDrawers();
+  document.getElementById('modals-container').innerHTML = renderModals();
+  initApp();
+});
+</script>
+</body>
+</html>

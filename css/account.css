@@ -1,0 +1,32 @@
+/* ============ ACCOUNT PAGE ============ */
+.account-page { display: grid; grid-template-columns: 240px 1fr; gap: 60px; padding: 40px var(--pad-x) 80px; max-width: 1400px; margin: 0 auto; }
+.account-side { position: sticky; top: 100px; align-self: start; }
+.account-user { display: flex; align-items: center; gap: 14px; padding-bottom: 24px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
+.account-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--fg); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 700; font-size: 20px; }
+.account-name { font-family: var(--font-head); font-weight: 700; font-size: 14px; letter-spacing: -0.01em; }
+[dir="rtl"] .account-name { font-family: var(--font-ar); letter-spacing: 0; }
+.account-email { font-size: 11px; color: var(--muted); }
+.account-nav { display: flex; flex-direction: column; gap: 4px; }
+.account-nav button { text-align: left; padding: 12px 14px; font-size: 13px; font-weight: 500; transition: background 0.2s; border-radius: 4px; background: none; border: none; cursor: pointer; }
+[dir="rtl"] .account-nav button { text-align: right; font-family: var(--font-ar); }
+.account-nav button:hover { background: var(--line-soft); }
+.account-nav button.active { background: var(--fg); color: #fff; font-weight: 600; }
+.account-nav .logout-btn { color: var(--danger); margin-top: 20px; }
+.account-content h2 { font-family: var(--font-head); font-weight: 700; font-size: 24px; letter-spacing: -0.02em; margin-bottom: 24px; text-transform: uppercase; }
+[dir="rtl"] .account-content h2 { font-family: var(--font-ar); letter-spacing: 0; text-transform: none; }
+.account-panel { display: none; }
+.account-panel.active { display: block; }
+.order-card { border: 1px solid var(--line); padding: 20px; margin-bottom: 16px; }
+.order-card-head { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--line-soft); flex-wrap: wrap; gap: 8px; }
+.order-card-num { font-family: var(--font-head); font-weight: 700; font-size: 14px; }
+.order-card-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.order-card-status { padding: 4px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: #FFF7E6; color: #B45309; }
+.order-card-items { font-size: 13px; color: var(--muted); }
+.order-card-total { font-family: var(--font-head); font-weight: 700; font-size: 16px; margin-top: 12px; }
+@media (max-width: 900px) {
+  .account-page { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .account-side { position: static; }
+  .account-nav { flex-direction: row; overflow-x: auto; gap: 8px; padding-bottom: 8px; }
+  .account-nav button { white-space: nowrap; padding: 10px 16px; }
+  .account-nav .logout-btn { margin-top: 0; }
+}

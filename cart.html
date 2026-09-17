@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cart — LUX</title>
+<meta name="description" content="Your LUX shopping bag." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lux-eg.com/cart.html" />
+<meta property="og:title" content="Cart — LUX" />
+<meta property="og:description" content="Your LUX shopping bag." />
+<meta property="og:image" content="https://lux-eg.com/images/look-01.png" />
+<meta property="og:site_name" content="LUX" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cart — LUX" />
+<meta name="twitter:description" content="Your LUX shopping bag." />
+<meta name="twitter:image" content="https://lux-eg.com/images/look-01.png" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/cart.css" />
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="index.html">Home</a> / <span data-t="yourBag">Cart</span></div>
+  <h1 data-t="yourBag">Your Bag</h1>
+</div>
+
+<div class="cart-page" id="cartPage"></div>
+
+<div id="footer-container"></div>
+<div id="drawers-container"></div>
+<div id="modals-container"></div>
+
+<script src="./js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('navbar-container').innerHTML = renderNavbar();
+  document.getElementById('footer-container').innerHTML = renderFooter();
+  document.getElementById('drawers-container').innerHTML = renderDrawers();
+  document.getElementById('modals-container').innerHTML = renderModals();
+  initApp();
+
+  function renderCartPage() {
+    const page = document.getElementById('cartPage');
+    if (AppState.cart.length === 0 && AppState.savedForLater.length === 0) {
+      page.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          </div>
+          <h2 data-t="emptyBag">Your bag is empty</h2>
+          <p>Discover our latest drops and find your new favorite piece.</p>
+          <a href="shop.html" class="btn" data-t="startShopping">Start Shopping</a>
+        </div>
+      `;
+      applyTranslations();
+      return;
+    }
+
+    const subtotal = getCartTotal();
+    const shipping = getShipping();
+    const total = subtotal + shipping;
+
+    let html = '';
+
+    if (AppState.cart.length > 0) {
+      html += `
+        <div class="cart-list">
+          ${AppState.cart.map((item, idx) => `
+            <div class="cart-row">
+              <div class="cart-row-img" style="background-image:url('${item.img}');"></div>
+              <div class="cart-row-info">
+                <div class="cart-row-look">${item.lookName}</div>
+                <div class="cart-row-name">${item.itemName}</div>
+                <div class="cart-row-meta">${t('size')}: ${item.size} · ${t('color')}: ${item.color}</div>
+              </div>
+              <div class="cart-row-actions">
+                <div class="qty-stepper" data-idx="${idx}">
+                  <button data-action="dec">−</button>
+                  <span>${num(item.qty)}</span>
+                  <button data-action="inc">+</button>
+                </div>
+                <button class="cart-row-save" data-save-idx="${idx}">${t('saveForLater')}</button>
+                <button class="cart-remove" data-idx="${idx}">${t('remove')}</button>
+              </div>
+              <div class="cart-row-price">${formatPrice(item.price * item.qty)}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else {
+      html += `
+        <div class="empty-state" style="grid-column:1/-1;padding:40px 20px;">
+          <h2 data-t="emptyBag">Your bag is empty</h2>
+          <a href="shop.html" class="btn" data-t="startShopping">Start Shopping</a>
+        </div>
+      `;
+    }
+
+    html += `
+      <div class="cart-summary">
+        <h3 class="summary-title" data-t="orderSummary">Order Summary</h3>
+        <div class="summary-row">
+          <span data-t="subtotal">Subtotal</span>
+          <span>${formatPrice(subtotal)}</span>
+        </div>
+        <div class="summary-row">
+          <span data-t="shipping">Shipping</span>
+          <span>${shipping === 0 ? t('free') : formatPrice(shipping)}</span>
+        </div>
+        <div class="summary-row total">
+          <span class="label" data-t="total">Total</span>
+          <span>${formatPrice(total)}</span>
+        </div>
+        ${AppState.cart.length > 0 ? `
+          <a href="checkout.html" class="btn btn-block" style="margin-top:20px;" data-t="checkout">Checkout</a>
+          <a href="shop.html" class="btn btn-ghost btn-block" style="margin-top:8px;" data-t="continueShopping">Continue Shopping</a>
+        ` : ''}
+      </div>
+    `;
+
+    if (AppState.savedForLater.length > 0) {
+      html += `
+        <div class="saved-section" style="grid-column:1/-1;">
+          <h3 data-t="savedForLater">Saved for Later (${num(AppState.savedForLater.length)})</h3>
+          <div class="product-grid" id="savedGrid"></div>
+        </div>
+      `;
+    }
+
+    page.innerHTML = html;
+
+    const savedGrid = document.getElementById('savedGrid');
+    if (savedGrid) {
+      savedGrid.innerHTML = AppState.savedForLater.map((item, idx) => `
+        <div class="product-card">
+          <div class="product-card-image">
+            <img src="${item.img}" alt="${item.itemName}">
+          </div>
+          <div class="product-card-info">
+            <div class="product-card-look">${item.lookName}</div>
+            <div class="product-card-name">${item.itemName}</div>
+            <div class="product-card-price">${formatPrice(item.price)}</div>
+            <button class="btn btn-sm" style="margin-top:8px;width:100%;" data-move-saved="${idx}">${t('moveToCart')}</button>
+          </div>
+        </div>
+      `).join('');
+      savedGrid.querySelectorAll('[data-move-saved]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          moveSavedToCart(parseInt(btn.dataset.moveSaved, 10));
+          renderCartPage();
+        });
+      });
+    }
+
+    page.querySelectorAll('.qty-stepper button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.closest('.qty-stepper').dataset.idx, 10);
+        updateQty(idx, btn.dataset.action === 'inc' ? 1 : -1);
+        renderCartPage();
+      });
+    });
+    page.querySelectorAll('.cart-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        removeFromCart(parseInt(btn.dataset.idx, 10));
+        renderCartPage();
+      });
+    });
+    page.querySelectorAll('.cart-row-save').forEach(btn => {
+      btn.addEventListener('click', () => {
+        moveToSavedLater(parseInt(btn.dataset.saveIdx, 10));
+        renderCartPage();
+      });
+    });
+
+    applyTranslations();
+  }
+
+  renderCartPage();
+  window.onLanguageChange = renderCartPage;
+});
+</script>
+</body>
+</html>

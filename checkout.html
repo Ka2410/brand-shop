@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Checkout — LUX</title>
+<meta name="description" content="Complete your LUX order." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lux-eg.com/checkout.html" />
+<meta property="og:title" content="Checkout — LUX" />
+<meta property="og:description" content="Complete your LUX order." />
+<meta property="og:image" content="https://lux-eg.com/images/look-01.png" />
+<meta property="og:site_name" content="LUX" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Checkout — LUX" />
+<meta name="twitter:description" content="Complete your LUX order." />
+<meta name="twitter:image" content="https://lux-eg.com/images/look-01.png" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/checkout.css" />
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<div id="checkoutWrapper">
+  <div class="page-header">
+    <div class="breadcrumb"><a href="cart.html" data-t="yourBag">Cart</a> / <span data-t="checkoutTitle">Checkout</span></div>
+    <h1 data-t="checkoutTitle">Checkout</h1>
+  </div>
+
+  <div class="checkout-page">
+    <div>
+      <div class="checkout-steps">
+        <div class="step-dot active" data-step="1"><span class="step-num">1</span><span data-t="infoStep">Info</span></div>
+        <div class="step-line"></div>
+        <div class="step-dot" data-step="2"><span class="step-num">2</span><span data-t="shippingStep">Shipping</span></div>
+        <div class="step-line"></div>
+        <div class="step-dot" data-step="3"><span class="step-num">3</span><span data-t="paymentStep">Payment</span></div>
+      </div>
+
+      <form id="checkoutForm" autocomplete="on">
+        <div class="checkout-panel active" data-panel="1">
+          <h2 data-t="contactInfo">Contact Information</h2>
+          <div class="form-group"><label class="form-label" data-t="email">Email</label><input type="email" class="form-input" name="email" required autocomplete="email"></div>
+          <div class="form-group"><label class="form-label" data-t="phone">Phone</label><input type="tel" class="form-input" name="phone" required autocomplete="tel"></div>
+          <h2 style="margin-top:32px;" data-t="shippingAddress">Shipping Address</h2>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label" data-t="firstName">First Name</label><input type="text" class="form-input" name="firstName" required autocomplete="given-name"></div>
+            <div class="form-group"><label class="form-label" data-t="lastName">Last Name</label><input type="text" class="form-input" name="lastName" required autocomplete="family-name"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label" data-t="city">City</label><input type="text" class="form-input" name="city" required autocomplete="address-level2"></div>
+            <div class="form-group"><label class="form-label" data-t="area">Area</label><input type="text" class="form-input" name="area" required autocomplete="address-level3"></div>
+          </div>
+          <div class="form-group"><label class="form-label" data-t="street">Street</label><input type="text" class="form-input" name="street" required autocomplete="street-address"></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label" data-t="building">Building</label><input type="text" class="form-input" name="building" required></div>
+            <div class="form-group"><label class="form-label" data-t="apartment">Apartment</label><input type="text" class="form-input" name="apartment"></div>
+          </div>
+          <div class="checkout-nav">
+            <a href="cart.html" class="btn btn-ghost" data-t="back">Back</a>
+            <button type="button" class="btn" data-next="2" style="flex:1;"><span data-t="next">Next</span> →</button>
+          </div>
+        </div>
+
+        <div class="checkout-panel" data-panel="2">
+          <h2 data-t="shippingMethod">Shipping Method</h2>
+          <label class="shipping-option active" data-shipping="standard" data-price="80">
+            <input type="radio" name="shipping" value="standard" checked>
+            <div class="shipping-option-info"><div class="shipping-option-name" data-t="standardShipping">Standard (3-5 days)</div><div class="shipping-option-desc">Cairo & Giza · All Egypt</div></div>
+            <div class="shipping-option-price">EGP 80</div>
+          </label>
+          <label class="shipping-option" data-shipping="express" data-price="150">
+            <input type="radio" name="shipping" value="express">
+            <div class="shipping-option-info"><div class="shipping-option-name" data-t="expressShipping">Express (1-2 days)</div><div class="shipping-option-desc">Cairo & Giza</div></div>
+            <div class="shipping-option-price">EGP 150</div>
+          </label>
+          <label class="shipping-option" data-shipping="sameday" data-price="200">
+            <input type="radio" name="shipping" value="sameday">
+            <div class="shipping-option-info"><div class="shipping-option-name" data-t="sameDayShipping">Same-Day (Cairo only)</div><div class="shipping-option-desc">Order before 2pm</div></div>
+            <div class="shipping-option-price">EGP 200</div>
+          </label>
+          <div class="checkout-nav">
+            <button type="button" class="btn btn-ghost" data-back="1" data-t="back">Back</button>
+            <button type="button" class="btn" data-next="3" style="flex:1;"><span data-t="next">Next</span> →</button>
+          </div>
+        </div>
+
+        <div class="checkout-panel" data-panel="3">
+          <h2 data-t="paymentMethod">Payment Method</h2>
+          <label class="payment-option active" data-payment="card">
+            <input type="radio" name="payment" value="card" checked>
+            <div class="shipping-option-info"><div class="shipping-option-name" data-t="cardPayment">Credit / Debit Card</div><div class="shipping-option-desc">Visa · Mastercard · Meza</div></div>
+          </label>
+          <label class="payment-option" data-payment="cod">
+            <input type="radio" name="payment" value="cod">
+            <div class="shipping-option-info"><div class="shipping-option-name" data-t="codPayment">Cash on Delivery</div><div class="shipping-option-desc">+EGP 20 fees</div></div>
+          </label>
+          <label class="payment-option" data-payment="vodafone">
+            <input type="radio" name="payment" value="vodafone">
+            <div class="shipping-option-info"><div class="shipping-option-name" data-t="vodafonePayment">Vodafone Cash</div></div>
+          </label>
+          <label class="payment-option" data-payment="paymob">
+            <input type="radio" name="payment" value="paymob">
+            <div class="shipping-option-info"><div class="shipping-option-name" data-t="paymobPayment">Paymob</div></div>
+          </label>
+          <div class="checkout-nav">
+            <button type="button" class="btn btn-ghost" data-back="2" data-t="back">Back</button>
+            <button type="submit" class="btn" style="flex:1;" data-t="placeOrder">Place Order</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <aside class="order-summary">
+      <h3 class="summary-title" style="font-family:var(--font-head);font-weight:700;font-size:16px;text-transform:uppercase;margin-bottom:20px;" data-t="orderSummary">Order Summary</h3>
+      <div class="order-items" id="orderItems"></div>
+      <div class="summary-row"><span data-t="subtotal">Subtotal</span><span id="sumSubtotal">—</span></div>
+      <div class="summary-row"><span data-t="shipping">Shipping</span><span id="sumShipping">—</span></div>
+      <div class="summary-row total"><span class="label" data-t="total">Total</span><span id="sumTotal">—</span></div>
+    </aside>
+  </div>
+</div>
+
+<div class="success-screen" id="successScreen">
+  <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></div>
+  <h1 data-t="orderPlaced">Order Placed!</h1>
+  <p data-t="orderConfirmed">Your order has been confirmed!</p>
+  <div class="order-num-badge" id="orderNum">#LUX-000000</div>
+  <p data-t="thankYou">Thank you for shopping with LUX.</p>
+  <div style="margin-top:30px;"><a href="index.html" class="btn" data-t="continueShoppingBtn">Continue Shopping</a></div>
+</div>
+
+<div id="footer-container"></div>
+<div id="drawers-container"></div>
+<div id="modals-container"></div>
+
+<script src="./js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('navbar-container').innerHTML = renderNavbar();
+  document.getElementById('footer-container').innerHTML = renderFooter();
+  document.getElementById('drawers-container').innerHTML = renderDrawers();
+  document.getElementById('modals-container').innerHTML = renderModals();
+  initApp();
+
+  if (AppState.cart.length === 0) { window.location.href = 'cart.html'; return; }
+
+  // ===== CHECKOUT FORM PERSISTENCE (sessionStorage) =====
+  const CHECKOUT_KEY = 'lux_checkout_form';
+  const form = document.getElementById('checkoutForm');
+
+  function safeSessionParse(key, fallback) {
+    try {
+      const val = sessionStorage.getItem(key);
+      return val ? JSON.parse(val) : fallback;
+    } catch { return fallback; }
+  }
+
+  function saveFormData() {
+    try {
+      const data = {};
+      const formData = new FormData(form);
+      for (const [key, value] of formData.entries()) data[key] = value;
+      sessionStorage.setItem(CHECKOUT_KEY, JSON.stringify(data));
+    } catch (e) { console.warn('[LUX] Failed to save checkout form', e); }
+  }
+
+  function restoreFormData() {
+    const data = safeSessionParse(CHECKOUT_KEY, null);
+    if (!data) return;
+
+    // Restore inputs
+    form.querySelectorAll('input, textarea, select').forEach(input => {
+      const name = input.name;
+      if (!name) return;
+      if (input.type === 'radio') {
+        if (data[name] === input.value) {
+          input.checked = true;
+          // Activate the parent label
+          const parent = input.closest('.shipping-option, .payment-option');
+          if (parent) {
+            const group = parent.parentElement;
+            group.querySelectorAll('.shipping-option, .payment-option').forEach(o => o.classList.remove('active'));
+            parent.classList.add('active');
+          }
+        }
+      } else if (data[name] !== undefined) {
+        input.value = data[name];
+      }
+    });
+
+    // Restore shipping price if it was saved
+    const savedShipping = form.querySelector('input[name="shipping"]:checked');
+    if (savedShipping) {
+      const parent = savedShipping.closest('.shipping-option');
+      if (parent?.dataset.price) currentShipping = parseInt(parent.dataset.price, 10);
+    }
+  }
+
+  function clearFormData() {
+    try { sessionStorage.removeItem(CHECKOUT_KEY); } catch {}
+  }
+
+  // Save on every input change (debounced)
+  let saveTimer;
+  form.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveFormData, 400);
+  });
+  form.addEventListener('change', saveFormData);
+
+  // ===== END CHECKOUT FORM PERSISTENCE =====
+
+  let currentShipping = 80;
+
+  function renderOrderSummary() {
+    const items = document.getElementById('orderItems');
+    const subtotal = getCartTotal();
+    items.innerHTML = AppState.cart.map(item => `
+      <div class="order-item">
+        <div class="order-item-img" style="background-image:url('${item.img}');"></div>
+        <div class="order-item-info">
+          <div class="order-item-name">${item.itemName}</div>
+          <div class="order-item-meta">${item.size} · ${item.color} · ×${num(item.qty)}</div>
+          <div class="order-item-price">${formatPrice(item.price * item.qty)}</div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('sumSubtotal').textContent = formatPrice(subtotal);
+    document.getElementById('sumShipping').textContent = formatPrice(currentShipping);
+    document.getElementById('sumTotal').textContent = formatPrice(subtotal + currentShipping);
+  }
+
+  function goToStep(n) {
+    document.querySelectorAll('.checkout-panel').forEach(p =>
+      p.classList.toggle('active', parseInt(p.dataset.panel, 10) === n));
+    document.querySelectorAll('.step-dot').forEach(s => {
+      const sn = parseInt(s.dataset.step, 10);
+      s.classList.toggle('active', sn === n);
+      s.classList.toggle('done', sn < n);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('[data-next]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const panel = btn.closest('.checkout-panel');
+      const required = panel.querySelectorAll('input[required]');
+      let valid = true;
+      required.forEach(inp => { if (!inp.value.trim()) { inp.reportValidity(); valid = false; } });
+      if (valid) goToStep(parseInt(btn.dataset.next, 10));
+    }));
+
+  document.querySelectorAll('[data-back]').forEach(btn =>
+    btn.addEventListener('click', () => goToStep(parseInt(btn.dataset.back, 10))));
+
+  document.querySelectorAll('.shipping-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.shipping-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      opt.querySelector('input').checked = true;
+      currentShipping = parseInt(opt.dataset.price, 10);
+      renderOrderSummary();
+      saveFormData();
+    });
+  });
+
+  document.querySelectorAll('.payment-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      opt.querySelector('input').checked = true;
+      saveFormData();
+    });
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const orderNum = 'LUX-' + Math.floor(100000 + Math.random() * 900000);
+    const order = {
+      num: orderNum,
+      date: new Date().toISOString(),
+      items: [...AppState.cart],
+      subtotal: getCartTotal(),
+      shipping: currentShipping,
+      total: getCartTotal() + currentShipping,
+      status: 'processing'
+    };
+    AppState.orders.unshift(order);
+    saveOrders();
+    clearCart();
+    clearFormData();
+
+    document.getElementById('orderNum').textContent = '#' + orderNum;
+    document.getElementById('checkoutWrapper').style.display = 'none';
+    document.getElementById('successScreen').classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Restore then render
+  restoreFormData();
+  renderOrderSummary();
+  window.onLanguageChange = renderOrderSummary;
+});
+</script>
+</body>
+</html>

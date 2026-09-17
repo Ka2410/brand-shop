@@ -1,0 +1,42 @@
+/* ============ CONTACT PAGE ============ */
+.contact-page {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; padding: 40px var(--pad-x) 80px;
+  max-width: 1200px; margin: 0 auto;
+}
+.contact-info h2 {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 28px; letter-spacing: -1px;
+  text-transform: uppercase; margin-bottom: 16px;
+}
+[dir="rtl"] .contact-info h2 { font-family: var(--font-ar); letter-spacing: 0; text-transform: none; }
+.contact-info > p { font-size: 14px; color: var(--muted); margin-bottom: 40px; line-height: 1.7; }
+.contact-channel {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 20px 0; border-bottom: 1px solid var(--line-soft);
+}
+.contact-channel svg { width: 22px; height: 22px; stroke: var(--fg); stroke-width: 1.5; fill: none; flex-shrink: 0; margin-top: 2px; }
+.contact-channel-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+[dir="rtl"] .contact-channel-label { font-family: var(--font-ar); letter-spacing: 0; text-transform: none; }
+.contact-channel-value { font-size: 14px; font-weight: 500; }
+.contact-channel-value a:hover { text-decoration: underline; }
+
+.faq-section { padding: 60px var(--pad-x) 80px; max-width: 900px; margin: 0 auto; }
+.faq-item { border-bottom: 1px solid var(--line); }
+.faq-trigger {
+  width: 100%; padding: 22px 0;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--font-head); font-weight: 600;
+  font-size: 15px; text-align: left;
+}
+[dir="rtl"] .faq-trigger { font-family: var(--font-ar); text-align: right; }
+.faq-trigger::after { content: '+'; font-size: 22px; transition: transform 0.3s; }
+.faq-item.open .faq-trigger::after { transform: rotate(45deg); }
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s var(--ease-out); }
+.faq-item.open .faq-answer { max-height: 300px; }
+.faq-answer-inner { padding-bottom: 22px; font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+@media (max-width: 900px) {
+  .contact-page { grid-template-columns: 1fr; gap: 40px; padding: 20px; }
+  .faq-section { padding: 40px 20px; }
+}
