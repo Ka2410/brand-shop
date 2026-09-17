@@ -129,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     heroWrapper.appendChild(slide);
   });
 
+  // ✅ Swiper Config — محسّن للموبايل
   const heroSwiper = new Swiper('#heroSwiper', {
     slidesPerView: 'auto',
     centeredSlides: true,
@@ -137,7 +138,24 @@ document.addEventListener('DOMContentLoaded', () => {
     speed: 800,
     grabCursor: true,
     mousewheel: { forceToAxis: true, sensitivity: 1, releaseOnEdges: false },
-    keyboard: { enabled: true }
+    keyboard: { enabled: true },
+    watchSlidesProgress: true,
+    slideToClickedSlide: true,
+    spaceBetween: 8,
+    breakpoints: {
+      0: {
+        slidesPerView: 'auto',
+        spaceBetween: 6
+      },
+      480: {
+        slidesPerView: 'auto',
+        spaceBetween: 8
+      },
+      900: {
+        slidesPerView: 'auto',
+        spaceBetween: 12
+      }
+    }
   });
 
   const heroTitle = document.getElementById('heroTitle');

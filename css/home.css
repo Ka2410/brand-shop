@@ -217,7 +217,7 @@
 }
 .collection-card:hover { transform: scale(1.01); }
 
-/* ✅ الصورة كاملة بدون قطع */
+/* الصورة كاملة بدون قطع */
 .collection-card img {
   position: absolute;
   inset: 0;
@@ -231,7 +231,7 @@
 }
 .collection-card:hover img { transform: scale(1.05); }
 
-/* ✅ Overlay خفيف فوق الصورة عشان النص يبان */
+/* Overlay خفيف فوق الصورة عشان النص يبان */
 .collection-card::before {
   content: '';
   position: absolute;
@@ -243,7 +243,7 @@
   z-index: 1;
   pointer-events: none;
 }
-.collection-card:hover img { transform: scale(1.06); }
+
 .collection-card-info { position: relative; z-index: 2; }
 .collection-card h3 {
   font-family: var(--font-head); font-weight: 700;
@@ -276,6 +276,7 @@
   font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; min-height: 50px;
 }
 
+/* ============ MOBILE HERO (زي الأول) ============ */
 @media (max-width: 900px) {
   .hero { height: auto; min-height: 0; padding: 20px 0 40px; display: block; }
   .hero-swiper { height: 58vh; }
