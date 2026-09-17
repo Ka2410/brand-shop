@@ -20,6 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/animations.css" />
 <link rel="stylesheet" href="./css/product.css" />
 </head>
 <body>
@@ -28,7 +29,6 @@
 
 <div class="pdp" id="pdp"></div>
 
-<!-- REVIEWS SECTION -->
 <section class="pdp-reviews" id="reviewsSection" style="display:none;">
   <div class="pdp-reviews-header">
     <div class="pdp-reviews-summary">
@@ -66,6 +66,7 @@
 <div id="modals-container"></div>
 
 <script src="./js/app.js"></script>
+<script src="./js/animations.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navbar-container').innerHTML = renderNavbar();
@@ -80,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   addToRecentlyViewed(product.id);
 
-  /* ===== Dynamic OG Tags ===== */
   const updateMeta = (selector, value) => {
     const el = document.querySelector(selector);
     if (el) el.setAttribute('content', value);
@@ -102,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedSize = null;
   let selectedColor = product.colors[0];
 
-  /* ===== Trust signals HTML ===== */
   function trustSignalsHTML() {
     return `
       <div class="pdp-trust-signals">
@@ -126,13 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  /* ===== Social proof HTML ===== */
   function socialProofHTML() {
     const rating = product.rating || 0;
     const reviewCount = product.reviewCount || 0;
     const soldCount = product.soldCount || 0;
     if (!rating) return '';
-
     return `
       <div class="pdp-social-proof">
         <div class="pdp-social-proof-item">
@@ -148,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  /* ===== Reviews HTML ===== */
   function renderReviews() {
     const section = document.getElementById('reviewsSection');
     const list = document.getElementById('reviewsList');
@@ -175,12 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="review-head-info">
               <div class="review-name">
                 ${escapeHtml(name)}
-                ${r.verified ? `
-                  <span class="review-verified">
-                    <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
-                    ${t('verifiedBuyer')}
-                  </span>
-                ` : ''}
+                ${r.verified ? `<span class="review-verified"><svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>${t('verifiedBuyer')}</span>` : ''}
               </div>
               <div class="review-date">${escapeHtml(date)}</div>
             </div>
@@ -192,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  /* ===== Main PDP render ===== */
   function renderPDP() {
     const lookName = AppState.isRTL ? product.lookNameAr : product.lookName;
     const itemName = AppState.isRTL ? product.itemNameAr : product.itemName;
@@ -336,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const buyNowFn = () => {
       if (!selectedSize) { showToast(t('sizeRequired')); return; }
       addToCart(product, selectedSize, selectedColor);
-      window.location.href = 'checkout.html';
+      setTimeout(() => { window.location.href = 'checkout.html'; }, 900);
     };
 
     document.getElementById('addBtn').addEventListener('click', addFn);

@@ -1,7 +1,12 @@
 'use strict';
 
-/* ============ PRELOADER ============ */
+/* ============ PRELOADER (INDEX ONLY) ============ */
 (function initPreloader() {
+  // Only run preloader on home page (index.html or /)
+  const path = window.location.pathname.split('/').pop();
+  const isHomePage = path === '' || path === 'index.html' || path === '/';
+  if (!isHomePage) return;
+
   const preloader = document.createElement('div');
   preloader.className = 'preloader';
   preloader.id = 'luxPreloader';

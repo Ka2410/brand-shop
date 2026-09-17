@@ -1446,7 +1446,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 .instagram-post {
   aspect-ratio: 1;
-  background: #f5f5f5 center center / cover no-repeat;
+  background-color: #F5F5F5;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -2259,4 +2262,71 @@ h1, h2, h3, h4, h5, h6 {
   .error-page { padding: 60px 20px; }
   .error-num-outline { -webkit-text-stroke-width: 1px; transform: translate(5px, 5px); }
   [dir="rtl"] .error-num-outline { transform: translate(-5px, 5px); }
+} 
+/* ============================================
+   ANIMATIONS INTEGRATION — Prevent FOUC
+============================================ */
+/* Ensures reveal elements don't cause a flash before animations.js loads */
+html:not(.js-ready) .reveal,
+html:not(.js-ready) .reveal-left,
+html:not(.js-ready) .reveal-right,
+html:not(.js-ready) .reveal-scale {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* Scroll progress bar sits above everything except preloader */
+.scroll-progress {
+  z-index: 9997;
+}
+
+/* Ensure page transitions don't block interactions when hidden */
+.page-transition:not(.active) {
+  pointer-events: none !important;
+}
+/* ============================================
+   HERO ENTRY ANIMATION
+============================================ */
+.hero-preload .hero-img {
+  opacity: 0;
+}
+
+@keyframes heroEnterCenter {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes heroEnterFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-400%) scale(0.5);
+    filter: grayscale(65%) blur(12px);
+  }
+  to {
+    opacity: 0.45;
+    transform: translateX(0) scale(0.72);
+    filter: grayscale(65%) blur(3px);
+  }
+}
+
+@keyframes heroEnterFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(400%) scale(0.5);
+    filter: grayscale(65%) blur(12px);
+  }
+  to {
+    opacity: 0.45;
+    transform: translateX(0) scale(0.72);
+    filter: grayscale(65%) blur(3px);
+  }
 }

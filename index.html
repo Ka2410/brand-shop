@@ -5,38 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>LUX — Egyptian Streetwear</title>
 <meta name="description" content="LUX — Egyptian streetwear born in Cairo. 90s nostalgia meets modern design. Shop graphic tees, baggy denim, oversized fits." />
-
-<!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lux-eg.com/" />
 <meta property="og:title" content="LUX — Egyptian Streetwear" />
 <meta property="og:description" content="Egyptian streetwear born in Cairo. 90s nostalgia meets modern design." />
 <meta property="og:image" content="https://lux-eg.com/images/look-01.png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
 <meta property="og:site_name" content="LUX" />
-<meta property="og:locale" content="en_US" />
-<meta property="og:locale:alternate" content="ar_EG" />
-
-<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="LUX — Egyptian Streetwear" />
-<meta name="twitter:description" content="Egyptian streetwear born in Cairo. 90s nostalgia meets modern design." />
+<meta name="twitter:description" content="Egyptian streetwear born in Cairo." />
 <meta name="twitter:image" content="https://lux-eg.com/images/look-01.png" />
-
 <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/animations.css" />
 <link rel="stylesheet" href="./css/home.css" />
 </head>
 <body>
 
 <div id="navbar-container"></div>
 
-<section class="hero">
+<section class="hero hero-preload">
   <div class="hero-info">
     <button class="ar" id="arBtn" style="font-family:var(--font-ar);font-size:12px;margin-bottom:10px;opacity:0.6;">← عربي</button>
     <h1 class="hero-title" id="heroTitle">NYC GRAFFITI<br>GRAPHIC TEE</h1>
@@ -53,11 +45,9 @@
     <a href="product.html?slug=nyc-graffiti" class="btn hero-btn" id="heroBtn">
       <span data-t="shop">Shop Now</span>
     </a>
-
     <div class="hero-scroll-wrap">
       <div class="hero-chapters" id="heroChapters"></div>
     </div>
-
     <div class="hero-counter">
       <span class="current" id="heroCurrent">01</span>
       <span class="sep"></span>
@@ -122,6 +112,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="./js/app.js"></script>
+<script src="./js/animations.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navbar-container').innerHTML = renderNavbar();

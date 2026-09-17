@@ -18,6 +18,7 @@
 <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./css/style.css" />
+<link rel="stylesheet" href="./css/animations.css" />
 <link rel="stylesheet" href="./css/checkout.css" />
 </head>
 <body>
@@ -138,6 +139,7 @@
 <div id="modals-container"></div>
 
 <script src="./js/app.js"></script>
+<script src="./js/animations.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navbar-container').innerHTML = renderNavbar();
@@ -148,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (AppState.cart.length === 0) { window.location.href = 'cart.html'; return; }
 
-  // ===== CHECKOUT FORM PERSISTENCE (sessionStorage) =====
   const CHECKOUT_KEY = 'lux_checkout_form';
   const form = document.getElementById('checkoutForm');
 
@@ -171,15 +172,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function restoreFormData() {
     const data = safeSessionParse(CHECKOUT_KEY, null);
     if (!data) return;
-
-    // Restore inputs
     form.querySelectorAll('input, textarea, select').forEach(input => {
       const name = input.name;
       if (!name) return;
       if (input.type === 'radio') {
         if (data[name] === input.value) {
           input.checked = true;
-          // Activate the parent label
           const parent = input.closest('.shipping-option, .payment-option');
           if (parent) {
             const group = parent.parentElement;
@@ -191,8 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = data[name];
       }
     });
-
-    // Restore shipping price if it was saved
     const savedShipping = form.querySelector('input[name="shipping"]:checked');
     if (savedShipping) {
       const parent = savedShipping.closest('.shipping-option');
@@ -204,15 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
     try { sessionStorage.removeItem(CHECKOUT_KEY); } catch {}
   }
 
-  // Save on every input change (debounced)
   let saveTimer;
   form.addEventListener('input', () => {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(saveFormData, 400);
   });
   form.addEventListener('change', saveFormData);
-
-  // ===== END CHECKOUT FORM PERSISTENCE =====
 
   let currentShipping = 80;
 
@@ -229,7 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     `).join('');
-
     document.getElementById('sumSubtotal').textContent = formatPrice(subtotal);
     document.getElementById('sumShipping').textContent = formatPrice(currentShipping);
     document.getElementById('sumTotal').textContent = formatPrice(subtotal + currentShipping);
@@ -299,9 +291,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('checkoutWrapper').style.display = 'none';
     document.getElementById('successScreen').classList.add('show');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (typeof window.launchConfetti === 'function') {
+      window.launchConfetti(window.innerWidth / 2, window.innerHeight / 2, 40);
+    }
   });
 
-  // Restore then render
   restoreFormData();
   renderOrderSummary();
   window.onLanguageChange = renderOrderSummary;
